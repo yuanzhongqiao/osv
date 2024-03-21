@@ -111,22 +111,7 @@ Hello from C code
 ./scripts/build image=tests &amp;&amp; \       # Create ZFS test image and run all tests on QEMU
 ./scripts/test.py -p qemu_microvm      # with microvm machine
 </code></pre><div class="zeroclipboard-container">
-    <clipboard-copy aria-label="Copy" class="ClipboardButton btn btn-invisible js-clipboard-copy m-2 p-0 tooltipped-no-delay d-flex flex-justify-center flex-items-center" data-copy-feedback="Copied!" data-tooltip-direction="w" value="./scripts/build check                  # Create ZFS test image and run all tests on QEMU
-
-./scripts/build check fs=rofs          # Create ROFS test image and run all tests on QEMU
-
-./scripts/build image=tests &amp;&amp; \       # Create ZFS test image and run all tests on Firecracker
-./scripts/test.py -p firecracker
-
-./scripts/build image=tests &amp;&amp; \       # Create ZFS test image and run all tests on QEMU
-./scripts/test.py -p qemu_microvm      # with microvm machine" tabindex="0" role="button">
-      <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-copy js-clipboard-copy-icon">
-    <path d="M0 6.75C0 5.784.784 5 1.75 5h1.5a.75.75 0 0 1 0 1.5h-1.5a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-1.5a.75.75 0 0 1 1.5 0v1.5A1.75 1.75 0 0 1 9.25 16h-7.5A1.75 1.75 0 0 1 0 14.25Z"></path><path d="M5 1.75C5 .784 5.784 0 6.75 0h7.5C15.216 0 16 .784 16 1.75v7.5A1.75 1.75 0 0 1 14.25 11h-7.5A1.75 1.75 0 0 1 5 9.25Zm1.75-.25a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-7.5a.25.25 0 0 0-.25-.25Z"></path>
-</svg>
-      <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-check js-clipboard-check-icon color-fg-success d-none">
-    <path d="M13.78 4.22a.75.75 0 0 1 0 1.06l-7.25 7.25a.75.75 0 0 1-1.06 0L2.22 9.28a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018L6 10.94l6.72-6.72a.75.75 0 0 1 1.06 0Z"></path>
-</svg>
-    </clipboard-copy>
+     
   </div></div>
 <p dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">此外，还有一个</font></font><a href="https://github.com/cloudius-systems/osv/wiki/Automated-Testing-Framework"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">自动化测试框架</font></font></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">
 ，可用于运行大约 30 个真实应用程序，其中一些应用程序在压力下使用</font></font><code>ab</code><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">或</font></font><code>wrk</code><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">工具。</font><font style="vertical-align: inherit;">目的是捕捉单元测试可能遗漏的任何回归。</font></font></p>
@@ -143,16 +128,7 @@ Hello from C code
 <div class="highlight highlight-source-shell notranslate position-relative overflow-auto" dir="auto"><pre>git clone https://github.com/cloudius-systems/osv.git
 <span class="pl-c1">cd</span> osv <span class="pl-k">&amp;&amp;</span> git submodule update --init --recursive
 ./scripts/setup.py</pre><div class="zeroclipboard-container">
-    <clipboard-copy aria-label="Copy" class="ClipboardButton btn btn-invisible js-clipboard-copy m-2 p-0 tooltipped-no-delay d-flex flex-justify-center flex-items-center" data-copy-feedback="Copied!" data-tooltip-direction="w" value="git clone https://github.com/cloudius-systems/osv.git
-cd osv &amp;&amp; git submodule update --init --recursive
-./scripts/setup.py" tabindex="0" role="button">
-      <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-copy js-clipboard-copy-icon">
-    <path d="M0 6.75C0 5.784.784 5 1.75 5h1.5a.75.75 0 0 1 0 1.5h-1.5a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-1.5a.75.75 0 0 1 1.5 0v1.5A1.75 1.75 0 0 1 9.25 16h-7.5A1.75 1.75 0 0 1 0 14.25Z"></path><path d="M5 1.75C5 .784 5.784 0 6.75 0h7.5C15.216 0 16 .784 16 1.75v7.5A1.75 1.75 0 0 1 14.25 11h-7.5A1.75 1.75 0 0 1 5 9.25Zm1.75-.25a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-7.5a.25.25 0 0 0-.25-.25Z"></path>
-</svg>
-      <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-check js-clipboard-check-icon color-fg-success d-none">
-    <path d="M13.78 4.22a.75.75 0 0 1 0 1.06l-7.25 7.25a.75.75 0 0 1-1.06 0L2.22 9.28a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018L6 10.94l6.72-6.72a.75.75 0 0 1 1.06 0Z"></path>
-</svg>
-    </clipboard-copy>
+    
   </div></div>
 <p dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">它</font></font><code>setup.py</code><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">可以识别并安装许多 Linux 发行版的软件包，包括 Fedora、Ubuntu、
  </font></font><a href="https://github.com/cloudius-systems/osv/wiki/Building-OSv-on-Debian-stable"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">Debian</font></font></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">、LinuxMint 和 RedHat 发行版（Scientific Linux、NauLinux、CentOS Linux、Red Hat Enterprise Linux、Oracle Linux）。</font><font style="vertical-align: inherit;">请注意，我们仅积极维护和测试 Ubuntu 和 Fedora，因此您对其他发行版的体验可能会有所不同。</font><font style="vertical-align: inherit;">最近还添加并测试了 CentOS 7 的支持，因此它应该也可以工作。</font></font><code>setup.py</code><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">
@@ -184,30 +160,7 @@ cd osv &amp;&amp; git submodule update --init --recursive
 
 <span class="pl-c"><span class="pl-c">#</span> Clean the build tree</span>
 ./scripts/build clean</pre><div class="zeroclipboard-container">
-    <clipboard-copy aria-label="Copy" class="ClipboardButton btn btn-invisible js-clipboard-copy m-2 p-0 tooltipped-no-delay d-flex flex-justify-center flex-items-center" data-copy-feedback="Copied!" data-tooltip-direction="w" value="# Create default image that comes with command line and REST API server
-./scripts/build
-
-# Create image with native-example app
-./scripts/build -j4 fs=rofs image=native-example
-
-# Create image with spring boot app with Java 10 JRE
-./scripts/build JAVA_VERSION=10 image=openjdk-zulu-9-and-above,spring-boot-example
-
- # Create image with 'ls' executable taken from the host
-./scripts/manifest_from_host.sh -w ls &amp;&amp; ./scripts/build --append-manifest
-
-# Create test image and run all tests in it
-./scripts/build check
-
-# Clean the build tree
-./scripts/build clean" tabindex="0" role="button">
-      <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-copy js-clipboard-copy-icon">
-    <path d="M0 6.75C0 5.784.784 5 1.75 5h1.5a.75.75 0 0 1 0 1.5h-1.5a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-1.5a.75.75 0 0 1 1.5 0v1.5A1.75 1.75 0 0 1 9.25 16h-7.5A1.75 1.75 0 0 1 0 14.25Z"></path><path d="M5 1.75C5 .784 5.784 0 6.75 0h7.5C15.216 0 16 .784 16 1.75v7.5A1.75 1.75 0 0 1 14.25 11h-7.5A1.75 1.75 0 0 1 5 9.25Zm1.75-.25a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-7.5a.25.25 0 0 0-.25-.25Z"></path>
-</svg>
-      <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-check js-clipboard-check-icon color-fg-success d-none">
-    <path d="M13.78 4.22a.75.75 0 0 1 0 1.06l-7.25 7.25a.75.75 0 0 1-1.06 0L2.22 9.28a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018L6 10.94l6.72-6.72a.75.75 0 0 1 1.06 0Z"></path>
-</svg>
-    </clipboard-copy>
+    
   </div></div>
 <p dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">命令 nproc 将自动计算 make 的作业/线程数</font></font><code>./scripts/build</code><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">。</font><font style="vertical-align: inherit;">或者，可以按如下方式导出环境变量 MAKEFLAGS：</font></font></p>
 <div class="snippet-clipboard-content notranslate position-relative overflow-auto"><pre class="notranslate"><code>export MAKEFLAGS=-j$(nproc)
@@ -227,26 +180,12 @@ cd osv &amp;&amp; git submodule update --init --recursive
 工具，该工具可以将映像转换为 vmdk、vdi 或 raw 格式。</font><font style="vertical-align: inherit;">例如：</font></font></p>
 <div class="snippet-clipboard-content notranslate position-relative overflow-auto"><pre class="notranslate"><code>./scripts/convert raw
 </code></pre><div class="zeroclipboard-container">
-    <clipboard-copy aria-label="Copy" class="ClipboardButton btn btn-invisible js-clipboard-copy m-2 p-0 tooltipped-no-delay d-flex flex-justify-center flex-items-center" data-copy-feedback="Copied!" data-tooltip-direction="w" value="./scripts/convert raw" tabindex="0" role="button">
-      <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-copy js-clipboard-copy-icon">
-    <path d="M0 6.75C0 5.784.784 5 1.75 5h1.5a.75.75 0 0 1 0 1.5h-1.5a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-1.5a.75.75 0 0 1 1.5 0v1.5A1.75 1.75 0 0 1 9.25 16h-7.5A1.75 1.75 0 0 1 0 14.25Z"></path><path d="M5 1.75C5 .784 5.784 0 6.75 0h7.5C15.216 0 16 .784 16 1.75v7.5A1.75 1.75 0 0 1 14.25 11h-7.5A1.75 1.75 0 0 1 5 9.25Zm1.75-.25a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-7.5a.25.25 0 0 0-.25-.25Z"></path>
-</svg>
-      <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-check js-clipboard-check-icon color-fg-success d-none">
-    <path d="M13.78 4.22a.75.75 0 0 1 0 1.06l-7.25 7.25a.75.75 0 0 1-1.06 0L2.22 9.28a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018L6 10.94l6.72-6.72a.75.75 0 0 1 1.06 0Z"></path>
-</svg>
-    </clipboard-copy>
+   
   </div></div>
 <div class="markdown-heading" dir="auto"><h3 tabindex="-1" class="heading-element" dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">拱64</font></font></h3><a id="user-content-aarch64" class="anchor" aria-label="永久链接：Aarch64" href="#aarch64"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path d="m7.775 3.275 1.25-1.25a3.5 3.5 0 1 1 4.95 4.95l-2.5 2.5a3.5 3.5 0 0 1-4.95 0 .751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018 1.998 1.998 0 0 0 2.83 0l2.5-2.5a2.002 2.002 0 0 0-2.83-2.83l-1.25 1.25a.751.751 0 0 1-1.042-.018.751.751 0 0 1-.018-1.042Zm-4.69 9.64a1.998 1.998 0 0 0 2.83 0l1.25-1.25a.751.751 0 0 1 1.042.018.751.751 0 0 1 .018 1.042l-1.25 1.25a3.5 3.5 0 1 1-4.95-4.95l2.5-2.5a3.5 3.5 0 0 1 4.95 0 .751.751 0 0 1-.018 1.042.751.751 0 0 1-1.042.018 1.998 1.998 0 0 0-2.83 0l-2.5 2.5a1.998 1.998 0 0 0 0 2.83Z"></path></svg></a></div>
 <p dir="auto"><font style="vertical-align: inherit;"></font><strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">默认情况下，OSv 内核是针对本机主机架构（x86_64 或 aarch64）构建的，但也可以通过添加arch</font></font></strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">参数在 Intel 机器上为 ARM 交叉编译内核和模块，</font><font style="vertical-align: inherit;">如下所示：</font></font></p>
 <div class="highlight highlight-source-shell notranslate position-relative overflow-auto" dir="auto"><pre>./scripts/build arch=aarch64</pre><div class="zeroclipboard-container">
-    <clipboard-copy aria-label="Copy" class="ClipboardButton btn btn-invisible js-clipboard-copy m-2 p-0 tooltipped-no-delay d-flex flex-justify-center flex-items-center" data-copy-feedback="Copied!" data-tooltip-direction="w" value="./scripts/build arch=aarch64" tabindex="0" role="button">
-      <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-copy js-clipboard-copy-icon">
-    <path d="M0 6.75C0 5.784.784 5 1.75 5h1.5a.75.75 0 0 1 0 1.5h-1.5a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-1.5a.75.75 0 0 1 1.5 0v1.5A1.75 1.75 0 0 1 9.25 16h-7.5A1.75 1.75 0 0 1 0 14.25Z"></path><path d="M5 1.75C5 .784 5.784 0 6.75 0h7.5C15.216 0 16 .784 16 1.75v7.5A1.75 1.75 0 0 1 14.25 11h-7.5A1.75 1.75 0 0 1 5 9.25Zm1.75-.25a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-7.5a.25.25 0 0 0-.25-.25Z"></path>
-</svg>
-      <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-check js-clipboard-check-icon color-fg-success d-none">
-    <path d="M13.78 4.22a.75.75 0 0 1 0 1.06l-7.25 7.25a.75.75 0 0 1-1.06 0L2.22 9.28a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018L6 10.94l6.72-6.72a.75.75 0 0 1 1.06 0Z"></path>
-</svg>
-    </clipboard-copy>
+    
   </div></div>
 <p dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">目前，</font><font style="vertical-align: inherit;">仅在 Fedora、Ubuntu 和 CentOS 7 上支持交叉编译</font></font><strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">aarch64</font></font></strong><font style="vertical-align: inherit;"></font><code>./scripts/download_aarch64_packages.py</code><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">版本的 OSv，并且可以使用该脚本下载相关的 aarch64 gcc 和库的二进制文件。</font><font style="vertical-align: inherit;">OSv 还可以在 ARM 硬件（如 Raspberry PI 4、Odroid N2+ 或 RockPro64）上的 Ubuntu 上本地构建。</font></font></p>
 <p dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">请注意，截至最新的</font></font><a href="https://github.com/cloudius-systems/osv/releases/tag/v0.57.0"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">0.57.0 版本</font></font></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">，OSv 的 ARM 部分已经得到了极大的改进和测试，在功能方面与 x86_64 端口相当。</font><font style="vertical-align: inherit;">此外，所有单元测试和许多高级应用程序（如 Java、golang、nginx、python、iperf3 等）都可以在启用了 KVM 加速的 Raspberry PI 4 和 Odroid N2+ 上的 QEMU 和 Firecraker 上成功运行。</font></font></p>
@@ -260,28 +199,14 @@ cd osv &amp;&amp; git submodule update --init --recursive
 <div class="markdown-heading" dir="auto"><h2 tabindex="-1" class="heading-element" dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">跑步等</font></font></h2><a id="user-content-running-osv" class="anchor" aria-label="永久链接：跑步等" href="#running-osv"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path d="m7.775 3.275 1.25-1.25a3.5 3.5 0 1 1 4.95 4.95l-2.5 2.5a3.5 3.5 0 0 1-4.95 0 .751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018 1.998 1.998 0 0 0 2.83 0l2.5-2.5a2.002 2.002 0 0 0-2.83-2.83l-1.25 1.25a.751.751 0 0 1-1.042-.018.751.751 0 0 1-.018-1.042Zm-4.69 9.64a1.998 1.998 0 0 0 2.83 0l1.25-1.25a.751.751 0 0 1 1.042.018.751.751 0 0 1 .018 1.042l-1.25 1.25a3.5 3.5 0 1 1-4.95-4.95l2.5-2.5a3.5 3.5 0 0 1 4.95 0 .751.751 0 0 1-.018 1.042.751.751 0 0 1-1.042.018 1.998 1.998 0 0 0-2.83 0l-2.5 2.5a1.998 1.998 0 0 0 0 2.83Z"></path></svg></a></div>
 <p dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">运行由 构建的 OSv 映像</font></font><code>scripts/build</code><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">非常简单：</font></font></p>
 <div class="highlight highlight-source-shell notranslate position-relative overflow-auto" dir="auto"><pre>./scripts/run.py</pre><div class="zeroclipboard-container">
-    <clipboard-copy aria-label="Copy" class="ClipboardButton btn btn-invisible js-clipboard-copy m-2 p-0 tooltipped-no-delay d-flex flex-justify-center flex-items-center" data-copy-feedback="Copied!" data-tooltip-direction="w" value="./scripts/run.py" tabindex="0" role="button">
-      <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-copy js-clipboard-copy-icon">
-    <path d="M0 6.75C0 5.784.784 5 1.75 5h1.5a.75.75 0 0 1 0 1.5h-1.5a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-1.5a.75.75 0 0 1 1.5 0v1.5A1.75 1.75 0 0 1 9.25 16h-7.5A1.75 1.75 0 0 1 0 14.25Z"></path><path d="M5 1.75C5 .784 5.784 0 6.75 0h7.5C15.216 0 16 .784 16 1.75v7.5A1.75 1.75 0 0 1 14.25 11h-7.5A1.75 1.75 0 0 1 5 9.25Zm1.75-.25a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-7.5a.25.25 0 0 0-.25-.25Z"></path>
-</svg>
-      <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-check js-clipboard-check-icon color-fg-success d-none">
-    <path d="M13.78 4.22a.75.75 0 0 1 0 1.06l-7.25 7.25a.75.75 0 0 1-1.06 0L2.22 9.28a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018L6 10.94l6.72-6.72a.75.75 0 0 1 1.06 0Z"></path>
-</svg>
-    </clipboard-copy>
+    
   </div></div>
 <p dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">默认情况下，</font></font><code>run.py</code><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">在 KVM 下运行 OSv，具有 4 个 vCPU 和 2 GB 内存。</font><font style="vertical-align: inherit;">您可以通过将相关参数传递给</font></font><code>run.py</code><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">. </font><font style="vertical-align: inherit;">有关如何使用该脚本的详细信息，请运行</font></font><code>./scripts/run.py --help</code><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">。</font></font></p>
 <p dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">可以</font></font><code>run.py</code><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">在 QEMU/KVM、Xen 和 VMware 上运行 OSv 映像。</font><font style="vertical-align: inherit;">如果在 KVM 下运行，您可以通过按 Ctrl+A X 终止。</font></font></p>
 <p dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">或者，您可以使用在</font><a href="https://firecracker-microvm.github.io/" rel="nofollow"><font style="vertical-align: inherit;">Firecracker</font></a></font><code>./scripts/firecracker.py</code><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">上运行 OSv </font><font style="vertical-align: inherit;">。</font><font style="vertical-align: inherit;">如果缺少的话，该脚本会自动下载 firecracker 二进制文件，并接受参数数量，例如 vCPU 数量、内存命名等</font><font style="vertical-align: inherit;">。</font><font style="vertical-align: inherit;">您可以从此</font><a href="https://github.com/cloudius-systems/osv/wiki/Running-OSv-on-Firecracker"><font style="vertical-align: inherit;">wiki</font></a><font style="vertical-align: inherit;">了解有关在 Firecracker 上运行 OSv 的更多信息。</font></font><a href="https://firecracker-microvm.github.io/" rel="nofollow"><font style="vertical-align: inherit;"></font></a><font style="vertical-align: inherit;"></font><code>run.py</code><font style="vertical-align: inherit;"></font><a href="https://github.com/cloudius-systems/osv/wiki/Running-OSv-on-Firecracker"><font style="vertical-align: inherit;"></font></a><font style="vertical-align: inherit;"></font></p>
 <p dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">请注意，为了在 QEMU 或 Firecracker 下的 Linux 上以最佳性能运行 OSv，您需要启用 KVM（这只能在</font></font><em><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">物理</font></font></em><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">Linux 机器、EC2“裸机”(i3) 实例或支持 KVM 嵌套虚拟化的 VM 上实现） ）。</font><font style="vertical-align: inherit;">验证 KVM 是否已启用的最简单方法是检查是否</font></font><code>/dev/kvm</code><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">存在，以及您的用户帐户是否可以对其进行读取和写入。</font><font style="vertical-align: inherit;">可能需要将您的用户添加到 kvm 组，如下所示：</font></font></p>
 <div class="highlight highlight-source-shell notranslate position-relative overflow-auto" dir="auto"><pre>usermod -aG kvm <span class="pl-k">&lt;</span>user name<span class="pl-k">&gt;</span></pre><div class="zeroclipboard-container">
-    <clipboard-copy aria-label="Copy" class="ClipboardButton btn btn-invisible js-clipboard-copy m-2 p-0 tooltipped-no-delay d-flex flex-justify-center flex-items-center" data-copy-feedback="Copied!" data-tooltip-direction="w" value="usermod -aG kvm <user name>" tabindex="0" role="button">
-      <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-copy js-clipboard-copy-icon">
-    <path d="M0 6.75C0 5.784.784 5 1.75 5h1.5a.75.75 0 0 1 0 1.5h-1.5a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-1.5a.75.75 0 0 1 1.5 0v1.5A1.75 1.75 0 0 1 9.25 16h-7.5A1.75 1.75 0 0 1 0 14.25Z"></path><path d="M5 1.75C5 .784 5.784 0 6.75 0h7.5C15.216 0 16 .784 16 1.75v7.5A1.75 1.75 0 0 1 14.25 11h-7.5A1.75 1.75 0 0 1 5 9.25Zm1.75-.25a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-7.5a.25.25 0 0 0-.25-.25Z"></path>
-</svg>
-      <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-check js-clipboard-check-icon color-fg-success d-none">
-    <path d="M13.78 4.22a.75.75 0 0 1 0 1.06l-7.25 7.25a.75.75 0 0 1-1.06 0L2.22 9.28a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018L6 10.94l6.72-6.72a.75.75 0 0 1 1.06 0Z"></path>
-</svg>
-    </clipboard-copy>
+   
   </div></div>
 <p dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">有关在 OSv 上构建和运行 JVM、Node.JS、Python 和其他托管运行时以及 Rust、Golang 或 C/C++ 应用程序的更多信息，请阅读此</font></font><a href="https://github.com/cloudius-systems/osv/wiki#running-your-application-on-osv"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">wiki 页面</font></font></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">。</font><font style="vertical-align: inherit;">有关可以在 OSv 上构建和运行的各种示例应用程序的更多信息，请阅读
 </font></font><a href="https://github.com/cloudius-systems/osv-apps#osv-applications"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">osv-apps 存储库 README</font></font></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">。</font></font></p>
@@ -290,14 +215,7 @@ cd osv &amp;&amp; git submodule update --init --recursive
 </font></font><a href="https://wiki.qemu.org/Documentation/Networking#User_Networking_.28SLIRP.29" rel="nofollow"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">用户网络/SLIRP</font></font></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">处于打开状态。</font><font style="vertical-align: inherit;">要以更高性能的外部网络启动 OSv，您需要启用</font></font><code>-n</code><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">如下</font></font><code>-v</code><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">选项：</font></font></p>
 <div class="snippet-clipboard-content notranslate position-relative overflow-auto"><pre class="notranslate"><code>sudo ./scripts/run.py -nv
 </code></pre><div class="zeroclipboard-container">
-    <clipboard-copy aria-label="Copy" class="ClipboardButton btn btn-invisible js-clipboard-copy m-2 p-0 tooltipped-no-delay d-flex flex-justify-center flex-items-center" data-copy-feedback="Copied!" data-tooltip-direction="w" value="sudo ./scripts/run.py -nv" tabindex="0" role="button">
-      <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-copy js-clipboard-copy-icon">
-    <path d="M0 6.75C0 5.784.784 5 1.75 5h1.5a.75.75 0 0 1 0 1.5h-1.5a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-1.5a.75.75 0 0 1 1.5 0v1.5A1.75 1.75 0 0 1 9.25 16h-7.5A1.75 1.75 0 0 1 0 14.25Z"></path><path d="M5 1.75C5 .784 5.784 0 6.75 0h7.5C15.216 0 16 .784 16 1.75v7.5A1.75 1.75 0 0 1 14.25 11h-7.5A1.75 1.75 0 0 1 5 9.25Zm1.75-.25a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-7.5a.25.25 0 0 0-.25-.25Z"></path>
-</svg>
-      <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-check js-clipboard-check-icon color-fg-success d-none">
-    <path d="M13.78 4.22a.75.75 0 0 1 0 1.06l-7.25 7.25a.75.75 0 0 1-1.06 0L2.22 9.28a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018L6 10.94l6.72-6.72a.75.75 0 0 1 1.06 0Z"></path>
-</svg>
-    </clipboard-copy>
+    
   </div></div>
 <p dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">-v 用于 KVM 的虚拟主机，可提供更好的性能，其设置需要 Tap 设备，因此我们使用 sudo。</font></font></p>
 <p dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">或者，可以将 OSv 作为与 Tap 设备一起使用的非特权运行，如下所示：</font></font></p>
@@ -306,31 +224,13 @@ cd osv &amp;&amp; git submodule update --init --recursive
 ./scripts/run.py -n -t qemu_tap0 \
   --execute='--ip=eth0,172.18.0.2,255.255.255.252 --defaultgw=172.18.0.1 --nameserver=172.18.0.1 /hello'
 </code></pre><div class="zeroclipboard-container">
-    <clipboard-copy aria-label="Copy" class="ClipboardButton btn btn-invisible js-clipboard-copy m-2 p-0 tooltipped-no-delay d-flex flex-justify-center flex-items-center" data-copy-feedback="Copied!" data-tooltip-direction="w" value="./scripts/create_tap_device.sh natted qemu_tap0 172.18.0.1 #You can pick a different address but then update all IPs below
-
-./scripts/run.py -n -t qemu_tap0 \
-  --execute='--ip=eth0,172.18.0.2,255.255.255.252 --defaultgw=172.18.0.1 --nameserver=172.18.0.1 /hello'" tabindex="0" role="button">
-      <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-copy js-clipboard-copy-icon">
-    <path d="M0 6.75C0 5.784.784 5 1.75 5h1.5a.75.75 0 0 1 0 1.5h-1.5a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-1.5a.75.75 0 0 1 1.5 0v1.5A1.75 1.75 0 0 1 9.25 16h-7.5A1.75 1.75 0 0 1 0 14.25Z"></path><path d="M5 1.75C5 .784 5.784 0 6.75 0h7.5C15.216 0 16 .784 16 1.75v7.5A1.75 1.75 0 0 1 14.25 11h-7.5A1.75 1.75 0 0 1 5 9.25Zm1.75-.25a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-7.5a.25.25 0 0 0-.25-.25Z"></path>
-</svg>
-      <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-check js-clipboard-check-icon color-fg-success d-none">
-    <path d="M13.78 4.22a.75.75 0 0 1 0 1.06l-7.25 7.25a.75.75 0 0 1-1.06 0L2.22 9.28a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018L6 10.94l6.72-6.72a.75.75 0 0 1 1.06 0Z"></path>
-</svg>
-    </clipboard-copy>
+  
   </div></div>
 <p dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">默认情况下，OSv 会生成一个</font></font><code>dhcpd</code><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">类似线程，自动配置虚拟网卡。</font><font style="vertical-align: inherit;">静态配置可以在 OSv 中通过配置网络来完成，如下所示：</font></font></p>
 <div class="snippet-clipboard-content notranslate position-relative overflow-auto"><pre class="notranslate"><code>ifconfig virtio-net0 192.168.122.100 netmask 255.255.255.0 up
 route add default gw 192.168.122.1
 </code></pre><div class="zeroclipboard-container">
-    <clipboard-copy aria-label="Copy" class="ClipboardButton btn btn-invisible js-clipboard-copy m-2 p-0 tooltipped-no-delay d-flex flex-justify-center flex-items-center" data-copy-feedback="Copied!" data-tooltip-direction="w" value="ifconfig virtio-net0 192.168.122.100 netmask 255.255.255.0 up
-route add default gw 192.168.122.1" tabindex="0" role="button">
-      <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-copy js-clipboard-copy-icon">
-    <path d="M0 6.75C0 5.784.784 5 1.75 5h1.5a.75.75 0 0 1 0 1.5h-1.5a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-1.5a.75.75 0 0 1 1.5 0v1.5A1.75 1.75 0 0 1 9.25 16h-7.5A1.75 1.75 0 0 1 0 14.25Z"></path><path d="M5 1.75C5 .784 5.784 0 6.75 0h7.5C15.216 0 16 .784 16 1.75v7.5A1.75 1.75 0 0 1 14.25 11h-7.5A1.75 1.75 0 0 1 5 9.25Zm1.75-.25a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-7.5a.25.25 0 0 0-.25-.25Z"></path>
-</svg>
-      <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-check js-clipboard-check-icon color-fg-success d-none">
-    <path d="M13.78 4.22a.75.75 0 0 1 0 1.06l-7.25 7.25a.75.75 0 0 1-1.06 0L2.22 9.28a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018L6 10.94l6.72-6.72a.75.75 0 0 1 1.06 0Z"></path>
-</svg>
-    </clipboard-copy>
+    
   </div></div>
 <p dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">要在 Firecracker 上启用网络，您必须显式启用</font></font><code>-n</code><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">选项</font></font><code>firecracker.py</code><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">。</font></font></p>
 <p dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">最后，请注意，OSv 的主分支仅实现网络堆栈的 IPV4 子集。</font><font style="vertical-align: inherit;">如果您需要 IPV6，请从</font></font><a href="https://github.com/cloudius-systems/osv/tree/ipv6"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">ipv6 分支</font></font></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">构建
