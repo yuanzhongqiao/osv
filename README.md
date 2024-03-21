@@ -1,150 +1,80 @@
-***OSv was originally designed and implemented by Cloudius Systems (now ScyllaDB) however
- currently it is being maintained and enhanced by a small community of volunteers.
- If you are into systems programming or want to learn and help us improve OSv, then please
- contact us on [OSv Google Group forum](https://groups.google.com/forum/#!forum/osv-dev)
- or feel free to pickup any [good issues for newcomers](https://github.com/cloudius-systems/osv/labels/good-for-newcomers).
- For details on how to format and send patches, please read
- [this wiki](https://github.com/cloudius-systems/osv/wiki/Formatting-and-sending-patches)
- (__we do accept pull requests as well__).***
-
-# OSv
-
-OSv is an open-source versatile modular **unikernel** designed to run single **unmodified
-Linux application** securely as microVM on top of a hypervisor, when compared to traditional
-operating systems which were designed for a vast range of physical machines. Built from
-the ground up for effortless deployment and management of microservices
-and serverless apps, with superior performance.
-
-OSv has been designed to run unmodified x86-64 and aarch64 Linux
-binaries **as is**, which effectively makes it a **Linux binary compatible unikernel**
-(for more details about Linux ABI compatibility please read
-[this doc](https://github.com/cloudius-systems/osv/wiki/OSv-Linux-ABI-Compatibility)).
-In particular OSv can run many managed language runtimes including
-[**JVM**](https://github.com/cloudius-systems/osv-apps/tree/master/java-example),
-[**Python**](https://github.com/cloudius-systems/osv-apps/tree/master/python-from-host),
-[**Node.JS**](https://github.com/cloudius-systems/osv-apps/tree/master/node-from-host),
-[**Ruby**](https://github.com/cloudius-systems/osv-apps/tree/master/ruby-example), **Erlang**,
-and applications built on top of those runtimes.
-It can also run applications written in languages compiling directly to native machine code like
-**C**, **C++**,
-[**Golang**](https://github.com/cloudius-systems/osv-apps/tree/master/golang-httpserver)
-and [**Rust**](https://github.com/cloudius-systems/osv-apps/tree/master/rust-httpserver)
-as well as native images produced
-by [**GraalVM**](https://github.com/cloudius-systems/osv-apps/tree/master/graalvm-example)
-and [WebAssembly/Wasmer](https://github.com/cloudius-systems/osv-apps/tree/master/webassembly).
-
-OSv can boot as fast as **~5 ms** on Firecracker using as low as 11 MB of memory.
-OSv can run on many hypervisors including QEMU/KVM,
-[Firecracker](https://github.com/cloudius-systems/osv/wiki/Running-OSv-on-Firecracker),
-[Cloud Hypervisor](https://github.com/cloudius-systems/osv/wiki/Running-OSv-on-Cloud-Hypervisor),
-Xen, [VMWare](https://github.com/cloudius-systems/osv/wiki/Running-OSv-on-VMware-ESXi),
-[VirtualBox](https://github.com/cloudius-systems/osv/wiki/Running-OSv-on-VirtualBox) and
-Hyperkit as well as open clouds like AWS EC2, GCE and OpenStack.
-
-For more information about OSv, see the [main wiki page](https://github.com/cloudius-systems/osv/wiki)
-and http://osv.io/.
-
-## Building and Running Apps on OSv
-
-In order to run an application on OSv, one needs to build an image by fusing OSv kernel, and
-the application files together. This, in high level can be achieved in two ways, either:
-- by using the shell script located at `./scripts/build`
- that builds the kernel from sources and fuses it with application files, or
-- by using the [capstan tool](https://github.com/cloudius-systems/capstan) that uses *pre-built
- kernel* and combines it with application files to produce a final image.
-
-If your intention is to try to run your app on OSv with the least effort possible, you should pursue the *capstan*
-route. For introduction please read this 
-[crash course](https://github.com/cloudius-systems/osv/wiki/Build-and-run-apps-on-OSv-using-Capstan).
-For more details about *capstan* please read 
-this more detailed [documentation](https://github.com/cloudius-systems/capstan#documentation). Pre-built OSv kernel files
-(`osv-loader.qemu`) can be automatically downloaded by *capstan* from 
-the [OSv regular releases page](https://github.com/cloudius-systems/osv/releases) or manually from 
-the [nightly releases repo](https://github.com/osvunikernel/osv-nightly-releases/releases/tag/ci-master-latest).
-
-If you are comfortable with make and GCC toolchain and want to try the latest OSv code, then you should
-read this [part of the readme](#setting-up-development-environment) to guide you how to set up your
- development environment and build OSv kernel and application images.
-
-## Releases
-
-We aim to release OSv 2-3 times a year. You can find the [latest one on github](https://github.com/cloudius-systems/osv/releases)
-along with number of published artifacts including kernel and some modules.
-
-In addition, we have set up [Travis-based CI/CD pipeline](https://travis-ci.org/github/cloudius-systems/osv) where each
-commit to the master and ipv6 branches triggers full build of the latest kernel and publishes some artifacts to 
-the [nightly releases repo](https://github.com/osvunikernel/osv-nightly-releases/releases). Each commit also
-triggers publishing of new Docker "build tool chain" images to the [Docker hub](https://hub.docker.com/u/osvunikernel).
-
-## Design
-
-Good bit of the design of OSv is pretty well explained in 
-the [Components of OSv](https://github.com/cloudius-systems/osv/wiki/Components-of-OSv) wiki page. You 
-can find even more information in the original 
-[USENIX paper and its presentation](https://www.usenix.org/conference/atc14/technical-sessions/presentation/kivity).
-
-In addition, you can find a lot of good information about design of specific OSv components on
-the [main wiki page](https://github.com/cloudius-systems/osv/wiki) and http://osv.io/ and http://blog.osv.io/.
-Unfortunately, some of that information may be outdated (especially on http://osv.io/), so it is always
-best to ask on the [mailing list](https://groups.google.com/forum/#!forum/osv-dev) if in doubt.
-
-## Component Diagram
-In the diagram below, you can see the major components of OSv across the logical layers. Starting with libc at the top, which is greatly based on musl, then the core layer in the middle, comprised of ELF dynamic linker, VFS, networking stack, thread scheduler, page cache, RCU, and memory management components. Then finally down, the layer composed of the clock, block, and networking device drivers that allow OSv to interact with hypervisors like VMware and VirtualBox or the ones based on KVM and XEN.
-![Component Diagram](../master/documentation/OSv_Component_Diagram.png)
-
-## Metrics and Performance
-
-There are no official **up-to date** performance metrics comparing OSv to other unikernels or Linux.
-In general OSv lags behind Linux in disk-I/O-intensive workloads partially due to coarse-grained locking 
-in VFS around read/write operations as described in this [issue](https://github.com/cloudius-systems/osv/issues/450).
-In network-I/O-intensive workloads, OSv should fare better (or at least used to as Linux has advanced a lot since)
-as shown with performance tests of Redis and [Memcached](https://github.com/cloudius-systems/osv/wiki/OSv-Case-Study:-Memcached).
-You can find some old "numbers" on the main wiki, http://osv.io/benchmarks and some papers listed at the bottom of this readme.
-
-So OSv is probably not best suited to run MySQL or ElasticSearch, but should deliver pretty solid performance for general
- stateless applications like microservices or serverless (at least as some papers show).
-
-### Kernel Size
-
-At this moment (as of December 2022) the size of the universal OSv kernel (`loader.elf` artifact) *built with all symbols hidden* is around
-3.6 MB. The size of the kernel linked with full `libstdc++.so.6` library and ZFS filesystem library included is 6.8 MB. Please read the [Modularization](https://github.com/cloudius-systems/osv/wiki/Modularization) wiki to better understand how kernel can be built and futher reduced in size and customized to run on specific hypervisor or specific app.
-
-The size of OSv kernel may be considered quite large comparing to other unikernels. However, bear in mind that OSv kernel (being unikernel) provides **subset** of functionality of the following Linux libraries (see their approximate size on Linux host):
-- `libresolv.so.2` (_100 K_)
-- `libc.so.6` (_2 MB_)
-- `libm.so.6` (_1.4 MB_)
-- `ld-linux-x86-64.so.2` (_184 K_)
-- `libpthread.so.0` (_156 K_)
-- `libdl.so.2` (_20 K_)
-- `librt.so.1` (_40 K_)
-- `libstdc++.so.6` (_2 MB_)
-- `libaio.so.1` (_16 K_)
-- `libxenstore.so.3.0` (_32 K_)
-- `libcrypt.so.1` (_44 K_)
-
-### Boot Time
-
-OSv, with _Read-Only FS and networking off_, can boot as fast as **~5 ms** on Firecracker 
-and even faster around **~3 ms** on QEMU with the microvm machine. However, in general the boot time
-will depend on many factors like hypervisor including settings of individual para-virtual devices, 
-filesystem (ZFS, ROFS, RAMFS or Virtio-FS) and some boot parameters. Please note that by default OSv images
-get built with ZFS filesystem.
-
-For example, the boot time of ZFS image on Firecracker is ~40 ms and regular QEMU ~200 ms these days. Also,
-newer versions of QEMU (>=4.0) are typically faster to boot. Booting on QEMU in PVH/HVM mode (aka direct kernel boot, enabled 
-by `-k` option of `run.py`) should always be faster as OSv is directly invoked in 64-bit long mode. Please see
-[this Wiki](https://github.com/cloudius-systems/osv/wiki/OSv-boot-methods-overview) for the brief review of the boot
-methods OSv supports.
-
-Finally, some boot parameters passed to the kernel may affect the boot time:
-- `--console serial` - this disables VGA console that is [slow to initialize](https://github.com/cloudius-systems/osv/issues/987) and can shave off 60-70 ms on QEMU
-- `--nopci` - this disables enumeration of PCI devices especially if we know none are present (QEMU with microvm or Firecracker) and can shave off 10-20 ms 
-- `--redirect=/tmp/out` - writing to the console can impact the performance quite severely (30-40%) if application logs 
-a lot, so redirecting standard output and error to a file might speed up performance quite a lot
-
-You can always see boot time breakdown by adding `--bootchart` parameter:
-```
-./scripts/run.py -e '--bootchart /hello'
+<div class="Box-sc-g0xbh4-0 bJMeLZ js-snippet-clipboard-copy-unpositioned" data-hpc="true"><article class="markdown-body entry-content container-lg" itemprop="text"><p dir="auto"><em><strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">OSv 最初是由 Cloudius Systems（现在的 ScyllaDB）设计和实现的，但目前它由一个小型志愿者社区维护和增强。</font><font style="vertical-align: inherit;">如果您热衷于系统编程或者想要学习并帮助我们改进 OSv，那么请在</font></font><a href="https://groups.google.com/forum/#!forum/osv-dev" rel="nofollow"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">OSv Google Group 论坛</font></font></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">上与我们联系
+，或者随时</font></font><a href="https://github.com/cloudius-systems/osv/labels/good-for-newcomers"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">为新人提出任何好的问题</font></font></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">。</font><font style="vertical-align: inherit;">有关如何格式化和发送补丁的详细信息，请阅读
+</font></font><a href="https://github.com/cloudius-systems/osv/wiki/Formatting-and-sending-patches"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">此 wiki</font></font></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;"> 
+（我们也接受拉取请求）。</font></font></strong></em></p>
+<div class="markdown-heading" dir="auto"><h1 tabindex="-1" class="heading-element" dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">ETC</font></font></h1><a id="user-content-osv" class="anchor" aria-label="永久链接：等等" href="#osv"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path d="m7.775 3.275 1.25-1.25a3.5 3.5 0 1 1 4.95 4.95l-2.5 2.5a3.5 3.5 0 0 1-4.95 0 .751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018 1.998 1.998 0 0 0 2.83 0l2.5-2.5a2.002 2.002 0 0 0-2.83-2.83l-1.25 1.25a.751.751 0 0 1-1.042-.018.751.751 0 0 1-.018-1.042Zm-4.69 9.64a1.998 1.998 0 0 0 2.83 0l1.25-1.25a.751.751 0 0 1 1.042.018.751.751 0 0 1 .018 1.042l-1.25 1.25a3.5 3.5 0 1 1-4.95-4.95l2.5-2.5a3.5 3.5 0 0 1 4.95 0 .751.751 0 0 1-.018 1.042.751.751 0 0 1-1.042.018 1.998 1.998 0 0 0-2.83 0l-2.5 2.5a1.998 1.998 0 0 0 0 2.83Z"></path></svg></a></div>
+<p dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">OSv 是一种开源多功能模块化</font></font><strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">Unikernel</font></font></strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">，旨在作为虚拟机管理程序之上的 microVM 安全地</font><font style="vertical-align: inherit;">运行单个</font></font><strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">未经修改的 Linux 应用程序，与为各种物理机设计的传统操作系统相比。</font></font></strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">从头开始构建，可轻松部署和管理微服务和无服务器应用程序，并具有卓越的性能。</font></font></p>
+<p dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">OSv 被设计为</font></font><strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">按原样</font></font></strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">运行未修改的 x86-64 和 aarch64 Linux 二进制文件，这实际上使其成为</font></font><strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">Linux 二进制兼容的 unikernel</font></font></strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;"> 
+（有关 Linux ABI 兼容性的更多详细信息，请阅读
+</font></font><a href="https://github.com/cloudius-systems/osv/wiki/OSv-Linux-ABI-Compatibility"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">此文档</font></font></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">）。</font><font style="vertical-align: inherit;">特别是，OSv 可以运行许多托管语言运行时，包括
+</font></font><a href="https://github.com/cloudius-systems/osv-apps/tree/master/java-example"><strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">JVM</font></font></strong></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">、
+ </font></font><a href="https://github.com/cloudius-systems/osv-apps/tree/master/python-from-host"><strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">Python</font></font></strong></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">、
+ </font></font><a href="https://github.com/cloudius-systems/osv-apps/tree/master/node-from-host"><strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">Node.JS</font></font></strong></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">、
+ </font></font><a href="https://github.com/cloudius-systems/osv-apps/tree/master/ruby-example"><strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">Ruby</font></font></strong></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">、</font></font><strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">Erlang</font></font></strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">以及构建在这些运行时之上的应用程序。</font><font style="vertical-align: inherit;">它还可以运行用直接编译为本机机器代码（如
+</font></font><strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">C</font></font></strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">、</font></font><strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">C++</font></font></strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">、
+ </font></font><a href="https://github.com/cloudius-systems/osv-apps/tree/master/golang-httpserver"><strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">Golang</font></font></strong></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">
+和</font></font><a href="https://github.com/cloudius-systems/osv-apps/tree/master/rust-httpserver"><strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">Rust）</font></font></strong></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">的语言编写的应用程序
+，以及</font></font><a href="https://github.com/cloudius-systems/osv-apps/tree/master/graalvm-example"><strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">GraalVM</font></font></strong></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">
+和</font></font><a href="https://github.com/cloudius-systems/osv-apps/tree/master/webassembly"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">WebAssembly/Wasmer</font></font></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">生成的本机映像。</font></font></p>
+<p dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">OSv 在 Firecracker 上的启动速度可快至约</font></font><strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">5 毫秒</font></font></strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">，使用低至 11 MB 的内存。</font><font style="vertical-align: inherit;">OSv 可以在许多虚拟机管理程序上运行，包括 QEMU/KVM、
+ </font></font><a href="https://github.com/cloudius-systems/osv/wiki/Running-OSv-on-Firecracker"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">Firecracker</font></font></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">、
+ </font></font><a href="https://github.com/cloudius-systems/osv/wiki/Running-OSv-on-Cloud-Hypervisor"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">Cloud Hypervisor</font></font></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">、Xen、</font></font><a href="https://github.com/cloudius-systems/osv/wiki/Running-OSv-on-VMware-ESXi"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">VMWare</font></font></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">、
+ </font></font><a href="https://github.com/cloudius-systems/osv/wiki/Running-OSv-on-VirtualBox"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">VirtualBox</font></font></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">和 Hyperkit 以及 AWS EC2、GCE 和 OpenStack 等开放云。</font></font></p>
+<p dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">有关 OSv 的更多信息，请参阅</font></font><a href="https://github.com/cloudius-systems/osv/wiki"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">wiki 主页</font></font></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">
+和</font></font><a href="http://osv.io/" rel="nofollow"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">http://osv.io/</font></font></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">。</font></font></p>
+<div class="markdown-heading" dir="auto"><h2 tabindex="-1" class="heading-element" dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">在 OSv 上构建和运行应用程序</font></font></h2><a id="user-content-building-and-running-apps-on-osv" class="anchor" aria-label="永久链接：在 OSv 上构建和运行应用程序" href="#building-and-running-apps-on-osv"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path d="m7.775 3.275 1.25-1.25a3.5 3.5 0 1 1 4.95 4.95l-2.5 2.5a3.5 3.5 0 0 1-4.95 0 .751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018 1.998 1.998 0 0 0 2.83 0l2.5-2.5a2.002 2.002 0 0 0-2.83-2.83l-1.25 1.25a.751.751 0 0 1-1.042-.018.751.751 0 0 1-.018-1.042Zm-4.69 9.64a1.998 1.998 0 0 0 2.83 0l1.25-1.25a.751.751 0 0 1 1.042.018.751.751 0 0 1 .018 1.042l-1.25 1.25a3.5 3.5 0 1 1-4.95-4.95l2.5-2.5a3.5 3.5 0 0 1 4.95 0 .751.751 0 0 1-.018 1.042.751.751 0 0 1-1.042.018 1.998 1.998 0 0 0-2.83 0l-2.5 2.5a1.998 1.998 0 0 0 0 2.83Z"></path></svg></a></div>
+<p dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">为了在 OSv 上运行应用程序，需要通过将 OSv 内核和应用程序文件融合在一起来构建映像。</font><font style="vertical-align: inherit;">从高层次来看，这可以通过两种方式实现：</font></font></p>
+<ul dir="auto">
+<li><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">通过使用位于的 shell 脚本</font></font><code>./scripts/build</code><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">
+从源代码构建内核并将其与应用程序文件融合，或者</font></font></li>
+<li><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">通过使用</font></font><a href="https://github.com/cloudius-systems/capstan"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">capstan 工具，</font></font></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">该工具使用</font></font><em><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">预构建的内核</font></font></em><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">并将其与应用程序文件组合以生成最终映像。</font></font></li>
+</ul>
+<p dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">如果您的目的是尝试以尽可能最少的努力在 OSv 上运行您的应用程序，那么您应该采用</font></font><em><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">绞盘</font></font></em><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">
+路线。</font><font style="vertical-align: inherit;">有关介绍，请阅读本
+</font></font><a href="https://github.com/cloudius-systems/osv/wiki/Build-and-run-apps-on-OSv-using-Capstan"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">速成课程</font></font></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">。</font></font><em><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">有关绞盘</font></font></em><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">的更多详细信息，</font><font style="vertical-align: inherit;">请阅读此更详细的</font></font><a href="https://github.com/cloudius-systems/capstan#documentation"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">文档</font></font></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">。</font><font style="vertical-align: inherit;">预构建的 OSv 内核文件 ( </font></font><code>osv-loader.qemu</code><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">) 可以由</font></font><em><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">capstan</font></font></em><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">从</font></font><a href="https://github.com/cloudius-systems/osv/releases"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">OSv 常规版本页面</font></font></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">自动下载，也可以从</font></font><a href="https://github.com/osvunikernel/osv-nightly-releases/releases/tag/ci-master-latest"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">夜间版本存储库</font></font></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">手动下载。</font></font></p>
+<p dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">如果您熟悉 make 和 GCC 工具链并且想要尝试最新的 OSv 代码，那么您应该阅读自述</font></font><a href="#setting-up-development-environment"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">文件的这一部分</font></font></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">，以指导您如何设置开发环境并构建 OSv 内核和应用程序映像。</font></font></p>
+<div class="markdown-heading" dir="auto"><h2 tabindex="-1" class="heading-element" dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">发布</font></font></h2><a id="user-content-releases" class="anchor" aria-label="永久链接：发布" href="#releases"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path d="m7.775 3.275 1.25-1.25a3.5 3.5 0 1 1 4.95 4.95l-2.5 2.5a3.5 3.5 0 0 1-4.95 0 .751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018 1.998 1.998 0 0 0 2.83 0l2.5-2.5a2.002 2.002 0 0 0-2.83-2.83l-1.25 1.25a.751.751 0 0 1-1.042-.018.751.751 0 0 1-.018-1.042Zm-4.69 9.64a1.998 1.998 0 0 0 2.83 0l1.25-1.25a.751.751 0 0 1 1.042.018.751.751 0 0 1 .018 1.042l-1.25 1.25a3.5 3.5 0 1 1-4.95-4.95l2.5-2.5a3.5 3.5 0 0 1 4.95 0 .751.751 0 0 1-.018 1.042.751.751 0 0 1-1.042.018 1.998 1.998 0 0 0-2.83 0l-2.5 2.5a1.998 1.998 0 0 0 0 2.83Z"></path></svg></a></div>
+<p dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">我们的目标是每年发布 2-3 次 OSv。</font></font><a href="https://github.com/cloudius-systems/osv/releases"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">您可以在 github 上</font></font></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">找到最新的版本</font><font style="vertical-align: inherit;">
+以及许多已发布的工件，包括内核和一些模块。</font></font></p>
+<p dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">此外，我们还建立了</font></font><a href="https://travis-ci.org/github/cloudius-systems/osv" rel="nofollow"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">基于 Travis 的 CI/CD 管道</font></font></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">，其中对 master 和 ipv6 分支的每次提交都会触发最新内核的完整构建，并将一些工件发布到</font></font><a href="https://github.com/osvunikernel/osv-nightly-releases/releases"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">夜间版本存储库</font></font></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">。</font><font style="vertical-align: inherit;">每次提交还会触发将新的 Docker“构建工具链”映像发布到</font></font><a href="https://hub.docker.com/u/osvunikernel" rel="nofollow"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">Docker hub</font></font></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">。</font></font></p>
+<div class="markdown-heading" dir="auto"><h2 tabindex="-1" class="heading-element" dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">设计</font></font></h2><a id="user-content-design" class="anchor" aria-label="永久链接：设计" href="#design"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path d="m7.775 3.275 1.25-1.25a3.5 3.5 0 1 1 4.95 4.95l-2.5 2.5a3.5 3.5 0 0 1-4.95 0 .751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018 1.998 1.998 0 0 0 2.83 0l2.5-2.5a2.002 2.002 0 0 0-2.83-2.83l-1.25 1.25a.751.751 0 0 1-1.042-.018.751.751 0 0 1-.018-1.042Zm-4.69 9.64a1.998 1.998 0 0 0 2.83 0l1.25-1.25a.751.751 0 0 1 1.042.018.751.751 0 0 1 .018 1.042l-1.25 1.25a3.5 3.5 0 1 1-4.95-4.95l2.5-2.5a3.5 3.5 0 0 1 4.95 0 .751.751 0 0 1-.018 1.042.751.751 0 0 1-1.042.018 1.998 1.998 0 0 0-2.83 0l-2.5 2.5a1.998 1.998 0 0 0 0 2.83Z"></path></svg></a></div>
+<p dir="auto"><font style="vertical-align: inherit;"></font><a href="https://github.com/cloudius-systems/osv/wiki/Components-of-OSv"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">OSv 的组件</font></font></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">wiki 页面中很好地解释了 OSv 的设计</font><font style="vertical-align: inherit;">。</font></font><a href="https://www.usenix.org/conference/atc14/technical-sessions/presentation/kivity" rel="nofollow"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">您可以在原始USENIX 论文及其演示文稿</font></font></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">中找到更多信息
+</font><font style="vertical-align: inherit;">。</font></font></p>
+<p dir="auto"><font style="vertical-align: inherit;"></font><a href="https://github.com/cloudius-systems/osv/wiki"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">此外，您可以在wiki 主页</font></font></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">以及</font></font><a href="http://osv.io/" rel="nofollow"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">http://osv.io/</font></font></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">和</font></font><a href="http://blog.osv.io/" rel="nofollow"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">http://blog.osv.io/</font></font></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">上找到许多有关特定 OSv 组件设计的好信息</font><font style="vertical-align: inherit;">。</font><font style="vertical-align: inherit;">不幸的是，其中一些信息可能已经过时（尤其是在</font></font><a href="http://osv.io/" rel="nofollow"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">http://osv.io/</font></font></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">上），因此如果有疑问，最好在</font></font><a href="https://groups.google.com/forum/#!forum/osv-dev" rel="nofollow"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">邮件列表</font></font></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">上询问。</font></font></p>
+<div class="markdown-heading" dir="auto"><h2 tabindex="-1" class="heading-element" dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">元件图</font></font></h2><a id="user-content-component-diagram" class="anchor" aria-label="永久链接：组件图" href="#component-diagram"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path d="m7.775 3.275 1.25-1.25a3.5 3.5 0 1 1 4.95 4.95l-2.5 2.5a3.5 3.5 0 0 1-4.95 0 .751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018 1.998 1.998 0 0 0 2.83 0l2.5-2.5a2.002 2.002 0 0 0-2.83-2.83l-1.25 1.25a.751.751 0 0 1-1.042-.018.751.751 0 0 1-.018-1.042Zm-4.69 9.64a1.998 1.998 0 0 0 2.83 0l1.25-1.25a.751.751 0 0 1 1.042.018.751.751 0 0 1 .018 1.042l-1.25 1.25a3.5 3.5 0 1 1-4.95-4.95l2.5-2.5a3.5 3.5 0 0 1 4.95 0 .751.751 0 0 1-.018 1.042.751.751 0 0 1-1.042.018 1.998 1.998 0 0 0-2.83 0l-2.5 2.5a1.998 1.998 0 0 0 0 2.83Z"></path></svg></a></div>
+<p dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">在下图中，您可以看到 OSv 跨逻辑层的主要组件。</font><font style="vertical-align: inherit;">从顶部的 libc 开始，它很大程度上基于 musl，然后是中间的核心层，由 ELF 动态链接器、VFS、网络堆栈、线程调度程序、页缓存、RCU 和内存管理组件组成。</font><font style="vertical-align: inherit;">最后是由时钟、块和网络设备驱动程序组成的层，允许 OSv 与 VMware 和 VirtualBox 等虚拟机管理程序或基于 KVM 和 XEN 的虚拟机管理程序进行交互。
+</font></font><a target="_blank" rel="noopener noreferrer" href="/cloudius-systems/osv/blob/master/documentation/OSv_Component_Diagram.png"><img src="/cloudius-systems/osv/raw/master/documentation/OSv_Component_Diagram.png" alt="元件图" style="max-width: 100%;"></a></p>
+<div class="markdown-heading" dir="auto"><h2 tabindex="-1" class="heading-element" dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">指标和绩效</font></font></h2><a id="user-content-metrics-and-performance" class="anchor" aria-label="永久链接：指标和性能" href="#metrics-and-performance"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path d="m7.775 3.275 1.25-1.25a3.5 3.5 0 1 1 4.95 4.95l-2.5 2.5a3.5 3.5 0 0 1-4.95 0 .751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018 1.998 1.998 0 0 0 2.83 0l2.5-2.5a2.002 2.002 0 0 0-2.83-2.83l-1.25 1.25a.751.751 0 0 1-1.042-.018.751.751 0 0 1-.018-1.042Zm-4.69 9.64a1.998 1.998 0 0 0 2.83 0l1.25-1.25a.751.751 0 0 1 1.042.018.751.751 0 0 1 .018 1.042l-1.25 1.25a3.5 3.5 0 1 1-4.95-4.95l2.5-2.5a3.5 3.5 0 0 1 4.95 0 .751.751 0 0 1-.018 1.042.751.751 0 0 1-1.042.018 1.998 1.998 0 0 0-2.83 0l-2.5 2.5a1.998 1.998 0 0 0 0 2.83Z"></path></svg></a></div>
+<p dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">没有官方的</font></font><strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">最新</font></font></strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">性能指标将 OSv 与其他 unikernels 或 Linux 进行比较。</font><font style="vertical-align: inherit;">一般来说，OSv 在磁盘 I/O 密集型工作负载方面落后于 Linux，部分原因是 VFS 中围绕读/写操作的粗粒度锁定（如本期所述</font></font><a href="https://github.com/cloudius-systems/osv/issues/450" data-hovercard-type="issue" data-hovercard-url="/cloudius-systems/osv/issues/450/hovercard"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">）</font></font></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">。</font></font><a href="https://github.com/cloudius-systems/osv/wiki/OSv-Case-Study:-Memcached"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">在网络 I/O 密集型工作负载中，OSv 应该表现得更好（或者至少习惯了，因为 Linux 自那时以来已经进步了很多），如 Redis 和Memcached</font></font></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">的性能测试所示</font><font style="vertical-align: inherit;">。</font><font style="vertical-align: inherit;">您可以在主 wiki、</font></font><a href="http://osv.io/benchmarks" rel="nofollow"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">http://osv.io/benchmarks</font></font></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">上找到一些旧的“数字” ，以及本自述文件底部列出的一些论文。</font></font></p>
+<p dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">因此，OSv 可能不是最适合运行 MySQL 或 ElasticSearch，但应该为微服务或无服务器等一般无状态应用程序提供相当稳定的性能（至少如一些论文所示）。</font></font></p>
+<div class="markdown-heading" dir="auto"><h3 tabindex="-1" class="heading-element" dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">内核大小</font></font></h3><a id="user-content-kernel-size" class="anchor" aria-label="永久链接：内核大小" href="#kernel-size"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path d="m7.775 3.275 1.25-1.25a3.5 3.5 0 1 1 4.95 4.95l-2.5 2.5a3.5 3.5 0 0 1-4.95 0 .751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018 1.998 1.998 0 0 0 2.83 0l2.5-2.5a2.002 2.002 0 0 0-2.83-2.83l-1.25 1.25a.751.751 0 0 1-1.042-.018.751.751 0 0 1-.018-1.042Zm-4.69 9.64a1.998 1.998 0 0 0 2.83 0l1.25-1.25a.751.751 0 0 1 1.042.018.751.751 0 0 1 .018 1.042l-1.25 1.25a3.5 3.5 0 1 1-4.95-4.95l2.5-2.5a3.5 3.5 0 0 1 4.95 0 .751.751 0 0 1-.018 1.042.751.751 0 0 1-1.042.018 1.998 1.998 0 0 0-2.83 0l-2.5 2.5a1.998 1.998 0 0 0 0 2.83Z"></path></svg></a></div>
+<p dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">目前（截至 2022 年 12 月）</font><em><font style="vertical-align: inherit;">隐藏所有符号构建的</font></em></font><code>loader.elf</code><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">通用 OSv 内核（工件）的大小</font><font style="vertical-align: inherit;">约为 3.6 MB。</font><font style="vertical-align: inherit;">与完整库和 ZFS 文件系统库链接的内核大小</font><font style="vertical-align: inherit;">为 6.8 MB。</font><font style="vertical-align: inherit;">请阅读</font><a href="https://github.com/cloudius-systems/osv/wiki/Modularization"><font style="vertical-align: inherit;">模块化</font></a><font style="vertical-align: inherit;">wiki，以更好地了解如何构建内核、进一步减小大小以及如何定制以在特定虚拟机管理程序或特定应用程序上运行。</font></font><em><font style="vertical-align: inherit;"></font></em><font style="vertical-align: inherit;"></font><code>libstdc++.so.6</code><font style="vertical-align: inherit;"></font><a href="https://github.com/cloudius-systems/osv/wiki/Modularization"><font style="vertical-align: inherit;"></font></a><font style="vertical-align: inherit;"></font></p>
+<p dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">与其他 unikernel 相比，OSv 内核的大小可能被认为相当大。</font><font style="vertical-align: inherit;">但是，请记住，OSv 内核（即 unikernel）提供了</font><font style="vertical-align: inherit;">以下 Linux 库的功能</font></font><strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">子集（请参阅它们在 Linux 主机上的大致大小）：</font></font></strong><font style="vertical-align: inherit;"></font></p>
+<ul dir="auto">
+<li><code>libresolv.so.2</code><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">( </font></font><em><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">100K</font></font></em><font style="vertical-align: inherit;"><font style="vertical-align: inherit;"> )</font></font></li>
+<li><code>libc.so.6</code><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">( </font></font><em><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">2MB</font></font></em><font style="vertical-align: inherit;"><font style="vertical-align: inherit;"> )</font></font></li>
+<li><code>libm.so.6</code><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">（</font></font><em><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">1.4MB</font></font></em><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">）</font></font></li>
+<li><code>ld-linux-x86-64.so.2</code><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">( </font></font><em><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">184K</font></font></em><font style="vertical-align: inherit;"><font style="vertical-align: inherit;"> )</font></font></li>
+<li><code>libpthread.so.0</code><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">( </font></font><em><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">156K</font></font></em><font style="vertical-align: inherit;"><font style="vertical-align: inherit;"> )</font></font></li>
+<li><code>libdl.so.2</code><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">( </font></font><em><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">20K</font></font></em><font style="vertical-align: inherit;"><font style="vertical-align: inherit;"> )</font></font></li>
+<li><code>librt.so.1</code><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">( </font></font><em><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">40K</font></font></em><font style="vertical-align: inherit;"><font style="vertical-align: inherit;"> )</font></font></li>
+<li><code>libstdc++.so.6</code><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">( </font></font><em><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">2MB</font></font></em><font style="vertical-align: inherit;"><font style="vertical-align: inherit;"> )</font></font></li>
+<li><code>libaio.so.1</code><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">( </font></font><em><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">16K</font></font></em><font style="vertical-align: inherit;"><font style="vertical-align: inherit;"> )</font></font></li>
+<li><code>libxenstore.so.3.0</code><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">( </font></font><em><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">32K</font></font></em><font style="vertical-align: inherit;"><font style="vertical-align: inherit;"> )</font></font></li>
+<li><code>libcrypt.so.1</code><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">( </font></font><em><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">44K</font></font></em><font style="vertical-align: inherit;"><font style="vertical-align: inherit;"> )</font></font></li>
+</ul>
+<div class="markdown-heading" dir="auto"><h3 tabindex="-1" class="heading-element" dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">开机时间</font></font></h3><a id="user-content-boot-time" class="anchor" aria-label="永久链接：启动时间" href="#boot-time"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path d="m7.775 3.275 1.25-1.25a3.5 3.5 0 1 1 4.95 4.95l-2.5 2.5a3.5 3.5 0 0 1-4.95 0 .751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018 1.998 1.998 0 0 0 2.83 0l2.5-2.5a2.002 2.002 0 0 0-2.83-2.83l-1.25 1.25a.751.751 0 0 1-1.042-.018.751.751 0 0 1-.018-1.042Zm-4.69 9.64a1.998 1.998 0 0 0 2.83 0l1.25-1.25a.751.751 0 0 1 1.042.018.751.751 0 0 1 .018 1.042l-1.25 1.25a3.5 3.5 0 1 1-4.95-4.95l2.5-2.5a3.5 3.5 0 0 1 4.95 0 .751.751 0 0 1-.018 1.042.751.751 0 0 1-1.042.018 1.998 1.998 0 0 0-2.83 0l-2.5 2.5a1.998 1.998 0 0 0 0 2.83Z"></path></svg></a></div>
+<p dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">OSv 在</font></font><em><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">只读 FS 和网络关闭的</font></font></em><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">情况下，在 Firecracker 上启动速度可达约</font></font><strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">5 毫秒</font></font></strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">，在使用 microvm 机器的 QEMU 上</font><font style="vertical-align: inherit;">启动速度甚至更快约</font></font><strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">3 毫秒。</font></font></strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">然而，一般来说，启动时间取决于许多因素，例如虚拟机管理程序，包括各个半虚拟设备、文件系统（ZFS、ROFS、RAMFS 或 Virtio-FS）的设置以及一些启动参数。</font><font style="vertical-align: inherit;">请注意，默认情况下，OSv 映像是使用 ZFS 文件系统构建的。</font></font></p>
+<p dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">例如，目前 Firecracker 上 ZFS 映像的启动时间约为 40 毫秒，而常规 QEMU 的启动时间约为 200 毫秒。</font><font style="vertical-align: inherit;">此外，较新版本的 QEMU (&gt;=4.0) 通常启动速度更快。</font><font style="vertical-align: inherit;">在 PVH/HVM 模式下在 QEMU 上启动（也称为直接内核启动，通过</font></font><code>-k</code><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">选项启用</font></font><code>run.py</code><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">）应该总是更快，因为 OSv 是在 64 位长模式下直接调用的。</font><font style="vertical-align: inherit;">请参阅
+</font></font><a href="https://github.com/cloudius-systems/osv/wiki/OSv-boot-methods-overview"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">此 Wiki</font></font></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">，了解 OSv 支持的引导方法的简要回顾。</font></font></p>
+<p dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">最后，传递给内核的一些启动参数可能会影响启动时间：</font></font></p>
+<ul dir="auto">
+<li><code>--console serial</code><font style="vertical-align: inherit;"></font><a href="https://github.com/cloudius-systems/osv/issues/987" data-hovercard-type="issue" data-hovercard-url="/cloudius-systems/osv/issues/987/hovercard"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">- 这会禁用初始化缓慢的</font></font></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">VGA 控制台</font><font style="vertical-align: inherit;">，并且可以在 QEMU 上缩短 60-70 毫秒</font></font></li>
+<li><code>--nopci</code><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">- 这会禁用 PCI 设备的枚举，特别是如果我们知道不存在任何设备（带有 microvm 或 Firecracker 的 QEMU），并且可以减少 10-20 毫秒</font></font></li>
+<li><code>--redirect=/tmp/out</code><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">- 如果应用程序记录大量日志，写入控制台可能会严重影响性能（30-40%），因此将标准输出和错误重定向到文件可能会大大提高性能</font></font></li>
+</ul>
+<p dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">您始终可以通过添加参数来查看启动时间细分</font></font><code>--bootchart</code><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">：</font></font></p>
+<div class="snippet-clipboard-content notranslate position-relative overflow-auto"><pre class="notranslate"><code>./scripts/run.py -e '--bootchart /hello'
 OSv v0.57.0-6-gb442a218
 eth0: 192.168.122.15
 	disk read (real mode): 58.62ms, (+58.62ms)
@@ -162,93 +92,123 @@ eth0: 192.168.122.15
 	Total time: 178.01ms, (+1.13ms)
 Cmdline: /hello
 Hello from C code
-```
-
-### Memory Utilization
-
-OSv needs at least 11 M of memory to run a _hello world_ app. Even though it is a third of what it was 4 years ago, it is still quite a lot comparing to other unikernels. The applications spawning many threads may take advantage of building the kernel with the option `conf_lazy_stack=1` to further reduce memory utilization (please see the comments of this [patch](https://github.com/cloudius-systems/osv/commit/f5684d9c3f4f8d20a64605cfe66fd51771754256) to better understand this feature). 
-
-We are planning to further lower this number by adding [self-tuning logic to L1/L2 memory pools](https://github.com/cloudius-systems/osv/issues/1013).
-
-## Testing
-
-OSv comes with around 140 unit tests that get executed upon every commit and run on ScyllaDB servers. There are also number of extra
-tests located under `tests/` sub-tree that are not automated at this point.
-
-You can run unit tests in number of ways:
-```
-./scripts/build check                  # Create ZFS test image and run all tests on QEMU
+</code></pre><div class="zeroclipboard-container">
+    <clipboard-copy aria-label="Copy" class="ClipboardButton btn btn-invisible js-clipboard-copy m-2 p-0 tooltipped-no-delay d-flex flex-justify-center flex-items-center" data-copy-feedback="Copied!" data-tooltip-direction="w" value="./scripts/run.py -e '--bootchart /hello'
+OSv v0.57.0-6-gb442a218
+eth0: 192.168.122.15
+	disk read (real mode): 58.62ms, (+58.62ms)
+	uncompress lzloader.elf: 77.20ms, (+18.58ms)
+	TLS initialization: 77.96ms, (+0.76ms)
+	.init functions: 79.75ms, (+1.79ms)
+	SMP launched: 80.11ms, (+0.36ms)
+	VFS initialized: 81.62ms, (+1.52ms)
+	Network initialized: 81.78ms, (+0.15ms)
+	pvpanic done: 81.91ms, (+0.14ms)
+	pci enumerated: 93.89ms, (+11.98ms)
+	drivers probe: 93.89ms, (+0.00ms)
+	drivers loaded: 174.80ms, (+80.91ms)
+	ROFS mounted: 176.88ms, (+2.08ms)
+	Total time: 178.01ms, (+1.13ms)
+Cmdline: /hello
+Hello from C code" tabindex="0" role="button">
+      <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-copy js-clipboard-copy-icon">
+    <path d="M0 6.75C0 5.784.784 5 1.75 5h1.5a.75.75 0 0 1 0 1.5h-1.5a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-1.5a.75.75 0 0 1 1.5 0v1.5A1.75 1.75 0 0 1 9.25 16h-7.5A1.75 1.75 0 0 1 0 14.25Z"></path><path d="M5 1.75C5 .784 5.784 0 6.75 0h7.5C15.216 0 16 .784 16 1.75v7.5A1.75 1.75 0 0 1 14.25 11h-7.5A1.75 1.75 0 0 1 5 9.25Zm1.75-.25a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-7.5a.25.25 0 0 0-.25-.25Z"></path>
+</svg>
+      <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-check js-clipboard-check-icon color-fg-success d-none">
+    <path d="M13.78 4.22a.75.75 0 0 1 0 1.06l-7.25 7.25a.75.75 0 0 1-1.06 0L2.22 9.28a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018L6 10.94l6.72-6.72a.75.75 0 0 1 1.06 0Z"></path>
+</svg>
+    </clipboard-copy>
+  </div></div>
+<div class="markdown-heading" dir="auto"><h3 tabindex="-1" class="heading-element" dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">内存利用率</font></font></h3><a id="user-content-memory-utilization" class="anchor" aria-label="永久链接：内存利用率" href="#memory-utilization"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path d="m7.775 3.275 1.25-1.25a3.5 3.5 0 1 1 4.95 4.95l-2.5 2.5a3.5 3.5 0 0 1-4.95 0 .751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018 1.998 1.998 0 0 0 2.83 0l2.5-2.5a2.002 2.002 0 0 0-2.83-2.83l-1.25 1.25a.751.751 0 0 1-1.042-.018.751.751 0 0 1-.018-1.042Zm-4.69 9.64a1.998 1.998 0 0 0 2.83 0l1.25-1.25a.751.751 0 0 1 1.042.018.751.751 0 0 1 .018 1.042l-1.25 1.25a3.5 3.5 0 1 1-4.95-4.95l2.5-2.5a3.5 3.5 0 0 1 4.95 0 .751.751 0 0 1-.018 1.042.751.751 0 0 1-1.042.018 1.998 1.998 0 0 0-2.83 0l-2.5 2.5a1.998 1.998 0 0 0 0 2.83Z"></path></svg></a></div>
+<p dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">OSv 需要至少 11 M 内存才能运行</font></font><em><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">hello world</font></font></em><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">应用程序。</font><font style="vertical-align: inherit;">尽管只有 4 年前的三分之一，但与其他 Unikernel 相比仍然不少。</font><font style="vertical-align: inherit;">生成许多&ZeroWidthSpace;&ZeroWidthSpace;线程的应用程序可能会利用构建内核的优势，并选择进一步减少内存利用率（请参阅此</font><a href="https://github.com/cloudius-systems/osv/commit/f5684d9c3f4f8d20a64605cfe66fd51771754256"><font style="vertical-align: inherit;">补丁</font></a></font><code>conf_lazy_stack=1</code><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">的注释</font><font style="vertical-align: inherit;">以更好地理解此功能）。</font></font><a href="https://github.com/cloudius-systems/osv/commit/f5684d9c3f4f8d20a64605cfe66fd51771754256"><font style="vertical-align: inherit;"></font></a><font style="vertical-align: inherit;"></font></p>
+<p dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">我们计划通过</font></font><a href="https://github.com/cloudius-systems/osv/issues/1013" data-hovercard-type="issue" data-hovercard-url="/cloudius-systems/osv/issues/1013/hovercard"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">向 L1/L2 内存池添加自调整逻辑</font></font></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">来进一步降低这个数字。</font></font></p>
+<div class="markdown-heading" dir="auto"><h2 tabindex="-1" class="heading-element" dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">测试</font></font></h2><a id="user-content-testing" class="anchor" aria-label="永久链接：测试" href="#testing"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path d="m7.775 3.275 1.25-1.25a3.5 3.5 0 1 1 4.95 4.95l-2.5 2.5a3.5 3.5 0 0 1-4.95 0 .751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018 1.998 1.998 0 0 0 2.83 0l2.5-2.5a2.002 2.002 0 0 0-2.83-2.83l-1.25 1.25a.751.751 0 0 1-1.042-.018.751.751 0 0 1-.018-1.042Zm-4.69 9.64a1.998 1.998 0 0 0 2.83 0l1.25-1.25a.751.751 0 0 1 1.042.018.751.751 0 0 1 .018 1.042l-1.25 1.25a3.5 3.5 0 1 1-4.95-4.95l2.5-2.5a3.5 3.5 0 0 1 4.95 0 .751.751 0 0 1-.018 1.042.751.751 0 0 1-1.042.018 1.998 1.998 0 0 0-2.83 0l-2.5 2.5a1.998 1.998 0 0 0 0 2.83Z"></path></svg></a></div>
+<p dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">OSv 附带大约 140 个单元测试，这些测试在每次提交时执行并在 ScyllaDB 服务器上运行。</font><font style="vertical-align: inherit;">子树下还有许多额外的测试</font></font><code>tests/</code><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">，此时尚未自动化。</font></font></p>
+<p dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">您可以通过多种方式运行单元测试：</font></font></p>
+<div class="snippet-clipboard-content notranslate position-relative overflow-auto"><pre class="notranslate"><code>./scripts/build check                  # Create ZFS test image and run all tests on QEMU
 
 ./scripts/build check fs=rofs          # Create ROFS test image and run all tests on QEMU
 
-./scripts/build image=tests && \       # Create ZFS test image and run all tests on Firecracker
+./scripts/build image=tests &amp;&amp; \       # Create ZFS test image and run all tests on Firecracker
 ./scripts/test.py -p firecracker
 
-./scripts/build image=tests && \       # Create ZFS test image and run all tests on QEMU
+./scripts/build image=tests &amp;&amp; \       # Create ZFS test image and run all tests on QEMU
 ./scripts/test.py -p qemu_microvm      # with microvm machine
-```
+</code></pre><div class="zeroclipboard-container">
+    <clipboard-copy aria-label="Copy" class="ClipboardButton btn btn-invisible js-clipboard-copy m-2 p-0 tooltipped-no-delay d-flex flex-justify-center flex-items-center" data-copy-feedback="Copied!" data-tooltip-direction="w" value="./scripts/build check                  # Create ZFS test image and run all tests on QEMU
 
-In addition, there is an [Automated Testing Framework](https://github.com/cloudius-systems/osv/wiki/Automated-Testing-Framework)
-that can be used to run around 30 real apps, some of them
-under stress using `ab` or `wrk` tools. The intention is to catch any regressions that might be missed
-by unit tests.
+./scripts/build check fs=rofs          # Create ROFS test image and run all tests on QEMU
 
-Finally, one can use [Docker files](https://github.com/cloudius-systems/osv/tree/master/docker#docker-osv-builder) to
-test OSv on different Linux distribution.
+./scripts/build image=tests &amp;&amp; \       # Create ZFS test image and run all tests on Firecracker
+./scripts/test.py -p firecracker
 
-## Setting up Development Environment
+./scripts/build image=tests &amp;&amp; \       # Create ZFS test image and run all tests on QEMU
+./scripts/test.py -p qemu_microvm      # with microvm machine" tabindex="0" role="button">
+      <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-copy js-clipboard-copy-icon">
+    <path d="M0 6.75C0 5.784.784 5 1.75 5h1.5a.75.75 0 0 1 0 1.5h-1.5a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-1.5a.75.75 0 0 1 1.5 0v1.5A1.75 1.75 0 0 1 9.25 16h-7.5A1.75 1.75 0 0 1 0 14.25Z"></path><path d="M5 1.75C5 .784 5.784 0 6.75 0h7.5C15.216 0 16 .784 16 1.75v7.5A1.75 1.75 0 0 1 14.25 11h-7.5A1.75 1.75 0 0 1 5 9.25Zm1.75-.25a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-7.5a.25.25 0 0 0-.25-.25Z"></path>
+</svg>
+      <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-check js-clipboard-check-icon color-fg-success d-none">
+    <path d="M13.78 4.22a.75.75 0 0 1 0 1.06l-7.25 7.25a.75.75 0 0 1-1.06 0L2.22 9.28a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018L6 10.94l6.72-6.72a.75.75 0 0 1 1.06 0Z"></path>
+</svg>
+    </clipboard-copy>
+  </div></div>
+<p dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">此外，还有一个</font></font><a href="https://github.com/cloudius-systems/osv/wiki/Automated-Testing-Framework"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">自动化测试框架</font></font></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">
+，可用于运行大约 30 个真实应用程序，其中一些应用程序在压力下使用</font></font><code>ab</code><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">或</font></font><code>wrk</code><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">工具。</font><font style="vertical-align: inherit;">目的是捕捉单元测试可能遗漏的任何回归。</font></font></p>
+<p dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">最后，可以使用</font></font><a href="https://github.com/cloudius-systems/osv/tree/master/docker#docker-osv-builder"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">Docker 文件</font></font></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">在不同的 Linux 发行版上测试 OSv。</font></font></p>
+<div class="markdown-heading" dir="auto"><h2 tabindex="-1" class="heading-element" dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">设置开发环境</font></font></h2><a id="user-content-setting-up-development-environment" class="anchor" aria-label="永久链接：设置开发环境" href="#setting-up-development-environment"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path d="m7.775 3.275 1.25-1.25a3.5 3.5 0 1 1 4.95 4.95l-2.5 2.5a3.5 3.5 0 0 1-4.95 0 .751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018 1.998 1.998 0 0 0 2.83 0l2.5-2.5a2.002 2.002 0 0 0-2.83-2.83l-1.25 1.25a.751.751 0 0 1-1.042-.018.751.751 0 0 1-.018-1.042Zm-4.69 9.64a1.998 1.998 0 0 0 2.83 0l1.25-1.25a.751.751 0 0 1 1.042.018.751.751 0 0 1 .018 1.042l-1.25 1.25a3.5 3.5 0 1 1-4.95-4.95l2.5-2.5a3.5 3.5 0 0 1 4.95 0 .751.751 0 0 1-.018 1.042.751.751 0 0 1-1.042.018 1.998 1.998 0 0 0-2.83 0l-2.5 2.5a1.998 1.998 0 0 0 0 2.83Z"></path></svg></a></div>
+<p dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">OSv 只能构建在 64 位 x86 和 ARM Linux 发行版上。</font><font style="vertical-align: inherit;">请注意，这分别意味着 64 位 x86 的“x86_64”或“amd64”版本以及 ARM 的“aarch64”或“arm64”版本。</font></font></p>
+<p dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">为了构建 OSv 内核，您需要一台带有 Linux 发行版的物理机或虚拟机、GCC 工具链以及 OSv 构建过程所依赖的所有必要的包和库。</font><font style="vertical-align: inherit;">最快的设置方法是使用
+</font><font style="vertical-align: inherit;">OSv 附带的</font></font><a href="https://github.com/cloudius-systems/osv/tree/master/docker#docker-osv-builder"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">Docker 文件。</font></font></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">您可以使用它们构建自己的 Docker 映像，然后启动它以构建 OSv 内核或在其中的 OSv 上运行应用程序。</font><a href="https://hub.docker.com/repository/docker/osvunikernel/osv-ubuntu-20.10-builder-base" rel="nofollow"><font style="vertical-align: inherit;">请注意，主 docker 文件依赖于Ubuntu</font></a><font style="vertical-align: inherit;">
+或</font><a href="https://hub.docker.com/repository/docker/osvunikernel/osv-fedora-31-builder-base" rel="nofollow"><font style="vertical-align: inherit;">Fedora</font></a><font style="vertical-align: inherit;">的
+</font><font style="vertical-align: inherit;">预构建基础</font></font><strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">Docker 映像</font></font></strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">
+，这些映像在每次提交时都会发布到 DockerHub。</font><font style="vertical-align: inherit;">这应该会加快构建最终映像的速度，因为所有必需的软件包都作为基础映像的一部分安装。</font></font><a href="https://hub.docker.com/repository/docker/osvunikernel/osv-ubuntu-20.10-builder-base" rel="nofollow"><font style="vertical-align: inherit;"></font></a><font style="vertical-align: inherit;"></font><a href="https://hub.docker.com/repository/docker/osvunikernel/osv-fedora-31-builder-base" rel="nofollow"><font style="vertical-align: inherit;"></font></a><font style="vertical-align: inherit;"></font></p>
+<p dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">或者，您可以手动克隆 OSv 存储库并使用</font></font><a href="https://github.com/cloudius-systems/osv/blob/master/scripts/setup.py"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">setup.py</font></font></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">
+安装所有必需的软件包和库，只要它支持您的 Linux 发行版，并且您的计算机上安装了 git 和 python 3：</font></font></p>
+<div class="highlight highlight-source-shell notranslate position-relative overflow-auto" dir="auto"><pre>git clone https://github.com/cloudius-systems/osv.git
+<span class="pl-c1">cd</span> osv <span class="pl-k">&amp;&amp;</span> git submodule update --init --recursive
+./scripts/setup.py</pre><div class="zeroclipboard-container">
+    <clipboard-copy aria-label="Copy" class="ClipboardButton btn btn-invisible js-clipboard-copy m-2 p-0 tooltipped-no-delay d-flex flex-justify-center flex-items-center" data-copy-feedback="Copied!" data-tooltip-direction="w" value="git clone https://github.com/cloudius-systems/osv.git
+cd osv &amp;&amp; git submodule update --init --recursive
+./scripts/setup.py" tabindex="0" role="button">
+      <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-copy js-clipboard-copy-icon">
+    <path d="M0 6.75C0 5.784.784 5 1.75 5h1.5a.75.75 0 0 1 0 1.5h-1.5a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-1.5a.75.75 0 0 1 1.5 0v1.5A1.75 1.75 0 0 1 9.25 16h-7.5A1.75 1.75 0 0 1 0 14.25Z"></path><path d="M5 1.75C5 .784 5.784 0 6.75 0h7.5C15.216 0 16 .784 16 1.75v7.5A1.75 1.75 0 0 1 14.25 11h-7.5A1.75 1.75 0 0 1 5 9.25Zm1.75-.25a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-7.5a.25.25 0 0 0-.25-.25Z"></path>
+</svg>
+      <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-check js-clipboard-check-icon color-fg-success d-none">
+    <path d="M13.78 4.22a.75.75 0 0 1 0 1.06l-7.25 7.25a.75.75 0 0 1-1.06 0L2.22 9.28a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018L6 10.94l6.72-6.72a.75.75 0 0 1 1.06 0Z"></path>
+</svg>
+    </clipboard-copy>
+  </div></div>
+<p dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">它</font></font><code>setup.py</code><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">可以识别并安装许多 Linux 发行版的软件包，包括 Fedora、Ubuntu、
+ </font></font><a href="https://github.com/cloudius-systems/osv/wiki/Building-OSv-on-Debian-stable"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">Debian</font></font></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">、LinuxMint 和 RedHat 发行版（Scientific Linux、NauLinux、CentOS Linux、Red Hat Enterprise Linux、Oracle Linux）。</font><font style="vertical-align: inherit;">请注意，我们仅积极维护和测试 Ubuntu 和 Fedora，因此您对其他发行版的体验可能会有所不同。</font><font style="vertical-align: inherit;">最近还添加并测试了 CentOS 7 的支持，因此它应该也可以工作。</font></font><code>setup.py</code><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">
+实际上 Docker 文件在内部使用</font><font style="vertical-align: inherit;">它来达到相同的结果。</font></font></p>
+<div class="markdown-heading" dir="auto"><h3 tabindex="-1" class="heading-element" dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">IDE</font></font></h3><a id="user-content-ides" class="anchor" aria-label="永久链接：IDE" href="#ides"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path d="m7.775 3.275 1.25-1.25a3.5 3.5 0 1 1 4.95 4.95l-2.5 2.5a3.5 3.5 0 0 1-4.95 0 .751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018 1.998 1.998 0 0 0 2.83 0l2.5-2.5a2.002 2.002 0 0 0-2.83-2.83l-1.25 1.25a.751.751 0 0 1-1.042-.018.751.751 0 0 1-.018-1.042Zm-4.69 9.64a1.998 1.998 0 0 0 2.83 0l1.25-1.25a.751.751 0 0 1 1.042.018.751.751 0 0 1 .018 1.042l-1.25 1.25a3.5 3.5 0 1 1-4.95-4.95l2.5-2.5a3.5 3.5 0 0 1 4.95 0 .751.751 0 0 1-.018 1.042.751.751 0 0 1-1.042.018 1.998 1.998 0 0 0-2.83 0l-2.5 2.5a1.998 1.998 0 0 0 0 2.83Z"></path></svg></a></div>
+<p dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">如果您喜欢在 IDE 中工作，我们建议您使用</font></font><a href="https://www.eclipse.org/cdt/" rel="nofollow"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">Eclipse CDT （可以按照本</font></font></a><font style="vertical-align: inherit;"></font><a href="https://github.com/cloudius-systems/osv/wiki/Working-With-Eclipse-CDT"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">wiki 页面</font></font></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">中的说明进行设置）</font><font style="vertical-align: inherit;">或
+</font></font><a href="https://www.jetbrains.com/clion/" rel="nofollow"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">JetBrains 的 CLion ，可以按照本</font></font></a><font style="vertical-align: inherit;"></font><a href="https://www.jetbrains.com/help/clion/managing-makefile-projects.html" rel="nofollow"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">指南</font></font></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">中的说明使用所谓的编译数据库进行设置以与 OSv makefile 一起使用</font><font style="vertical-align: inherit;">。</font></font></p>
+<div class="markdown-heading" dir="auto"><h2 tabindex="-1" class="heading-element" dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">构建 OSv 内核并创建镜像</font></font></h2><a id="user-content-building-osv-kernel-and-creating-images" class="anchor" aria-label="永久链接：构建 OSv 内核并创建镜像" href="#building-osv-kernel-and-creating-images"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path d="m7.775 3.275 1.25-1.25a3.5 3.5 0 1 1 4.95 4.95l-2.5 2.5a3.5 3.5 0 0 1-4.95 0 .751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018 1.998 1.998 0 0 0 2.83 0l2.5-2.5a2.002 2.002 0 0 0-2.83-2.83l-1.25 1.25a.751.751 0 0 1-1.042-.018.751.751 0 0 1-.018-1.042Zm-4.69 9.64a1.998 1.998 0 0 0 2.83 0l1.25-1.25a.751.751 0 0 1 1.042.018.751.751 0 0 1 .018 1.042l-1.25 1.25a3.5 3.5 0 1 1-4.95-4.95l2.5-2.5a3.5 3.5 0 0 1 4.95 0 .751.751 0 0 1-.018 1.042.751.751 0 0 1-1.042.018 1.998 1.998 0 0 0-2.83 0l-2.5 2.5a1.998 1.998 0 0 0 0 2.83Z"></path></svg></a></div>
+<p dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">构建 OSv 就像使用 shell 脚本一样简单，</font></font><code>./scripts/build</code><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">
+该脚本通过委托主</font></font><a href="https://github.com/cloudius-systems/osv/blob/master/Makefile"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">makefile</font></font></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">
+来构建内核并使用大量 Python 脚本来编排构建过程，例如</font></font><code>./scripts/module.py</code><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">
+构建应用程序并将其与内核</font></font><em><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">融合</font></font></em><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">到放置在</font></font><code>./build/release/usr.img</code><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">(或</font></font><code>./build/$(arch)/usr.img</code><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">一般情况）。</font><font style="vertical-align: inherit;">请注意，</font></font><em><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">构建应用程序</font></font></em><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">并不一定意味着从源代码构建，因为在许多情况下，应用程序二进制文件将使用 shell 脚本位于 Linux 构建机器上并从中复制</font></font><code>./scripts/manifest_from_host.sh</code><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">
+（</font><font style="vertical-align: inherit;">有关详细信息，请参阅</font></font><a href="https://github.com/cloudius-systems/osv/wiki/Running-unmodified-Linux-executables-on-OSv"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">此 Wiki 页面）。</font></font></a><font style="vertical-align: inherit;"></font></p>
+<p dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">可以使用shell脚本，</font></font><code>build</code><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">如下例所示：</font></font></p>
+<div class="highlight highlight-source-shell notranslate position-relative overflow-auto" dir="auto"><pre><span class="pl-c"><span class="pl-c">#</span> Create default image that comes with command line and REST API server</span>
+./scripts/build
 
-OSv can only be built on a 64-bit x86 and ARM Linux distribution. Please note that
-this means the "x86_64" or "amd64" version for 64-bit x86 and "aarch64" or "arm64" version for ARM respectively.
+<span class="pl-c"><span class="pl-c">#</span> Create image with native-example app</span>
+./scripts/build -j4 fs=rofs image=native-example
 
-In order to build OSv kernel you need a physical or virtual machine with Linux distribution on it and GCC toolchain and
-all necessary packages and libraries OSv build process depends on. The fastest way to set it up is to use the
-[Docker files](https://github.com/cloudius-systems/osv/tree/master/docker#docker-osv-builder) that OSv comes with.
-You can use them to build your own Docker image and then start it in order to build OSv kernel or run an app on OSv inside of it.
-Please note that the main docker file depends on pre-built base **Docker images** for 
-[Ubuntu](https://hub.docker.com/repository/docker/osvunikernel/osv-ubuntu-20.10-builder-base) 
-or [Fedora](https://hub.docker.com/repository/docker/osvunikernel/osv-fedora-31-builder-base) 
-that get published to DockerHub upon every commit. This should speed up building the final images
-as all necessary packages are installed as part of the base images.
+<span class="pl-c"><span class="pl-c">#</span> Create image with spring boot app with Java 10 JRE</span>
+./scripts/build JAVA_VERSION=10 image=openjdk-zulu-9-and-above,spring-boot-example
 
-Alternatively, you can manually clone OSv repo and use [setup.py](https://github.com/cloudius-systems/osv/blob/master/scripts/setup.py)
-to install all required packages and libraries, as long as it supports your Linux distribution, and you have both git 
-and python 3 installed on your machine:
-```bash
-git clone https://github.com/cloudius-systems/osv.git
-cd osv && git submodule update --init --recursive
-./scripts/setup.py
-```
+ <span class="pl-c"><span class="pl-c">#</span> Create image with 'ls' executable taken from the host</span>
+./scripts/manifest_from_host.sh -w ls <span class="pl-k">&amp;&amp;</span> ./scripts/build --append-manifest
 
-The `setup.py` recognizes and installs packages for number of Linux distributions including Fedora, Ubuntu,
-[Debian](https://github.com/cloudius-systems/osv/wiki/Building-OSv-on-Debian-stable), LinuxMint and RedHat ones 
-(Scientific Linux, NauLinux, CentOS Linux, Red Hat Enterprise Linux, Oracle Linux). Please note that we actively
-maintain and test only Ubuntu and Fedora, so your mileage with other distributions may vary. The support of CentOS 7
-has also been recently added and tested so it should work as well. The `setup.py`
-is actually used by Docker files internally to achieve the same result. 
+<span class="pl-c"><span class="pl-c">#</span> Create test image and run all tests in it</span>
+./scripts/build check
 
-### IDEs
-
-If you like working in IDEs, we recommend either [Eclipse CDT](https://www.eclipse.org/cdt/) which can be setup
-as described in this [wiki page](https://github.com/cloudius-systems/osv/wiki/Working-With-Eclipse-CDT) or 
-[CLion from JetBrains](https://www.jetbrains.com/clion/) which can be setup to work with OSv makefile using
-so called compilation DB as described in this [guide](https://www.jetbrains.com/help/clion/managing-makefile-projects.html).
-
-## Building OSv Kernel and Creating Images
-
-Building OSv is as easy as using the shell script `./scripts/build`
-that orchestrates the build process by delegating to the main [makefile](https://github.com/cloudius-systems/osv/blob/master/Makefile)
-to build the kernel and by using number of Python scripts like `./scripts/module.py` 
-to build application and *fuse* it together with the kernel
-into a final image placed at `./build/release/usr.img` (or `./build/$(arch)/usr.img` in general).
-Please note that *building an application* does not necessarily mean building from sources as in many 
-cases the application binaries would be located on and copied from the Linux build machine
-using the shell script `./scripts/manifest_from_host.sh`
-(see [this Wiki page](https://github.com/cloudius-systems/osv/wiki/Running-unmodified-Linux-executables-on-OSv) for details).
-
-The shell script `build` can be used as the examples below illustrate:
-```bash
-# Create default image that comes with command line and REST API server
+<span class="pl-c"><span class="pl-c">#</span> Clean the build tree</span>
+./scripts/build clean</pre><div class="zeroclipboard-container">
+    <clipboard-copy aria-label="Copy" class="ClipboardButton btn btn-invisible js-clipboard-copy m-2 p-0 tooltipped-no-delay d-flex flex-justify-center flex-items-center" data-copy-feedback="Copied!" data-tooltip-direction="w" value="# Create default image that comes with command line and REST API server
 ./scripts/build
 
 # Create image with native-example app
@@ -258,164 +218,170 @@ The shell script `build` can be used as the examples below illustrate:
 ./scripts/build JAVA_VERSION=10 image=openjdk-zulu-9-and-above,spring-boot-example
 
  # Create image with 'ls' executable taken from the host
-./scripts/manifest_from_host.sh -w ls && ./scripts/build --append-manifest
+./scripts/manifest_from_host.sh -w ls &amp;&amp; ./scripts/build --append-manifest
 
 # Create test image and run all tests in it
 ./scripts/build check
 
 # Clean the build tree
-./scripts/build clean
-```
-
-Command nproc will calculate the number of jobs/threads for make and `./scripts/build` automatically.
-Alternatively, the environment variable MAKEFLAGS can be exported as follows:
-
-```
-export MAKEFLAGS=-j$(nproc)
-```
-
-In that case, make and scripts/build do not need the parameter -j.
-
-For details on how to use the build script, please run `./scripts/build --help`.
-
-The `./scripts/build` creates the image `build/last/usr.img` in qcow2 format.
-To convert this image to other formats, use the `./scripts/convert`
-tool, which can convert an image to the vmdk, vdi or raw formats.
-For example:
-
-```
-./scripts/convert raw
-```
-
-### Aarch64
-
-By default, OSv kernel gets built for the native host architecture (x86_64 or aarch64), but it is also possible
- to cross-compile kernel and modules on Intel machine for ARM by adding **arch** parameter like so:
-```bash
-./scripts/build arch=aarch64
-```
-At this point cross-compiling the **aarch64** version of OSv is only supported
-on Fedora, Ubuntu and CentOS 7 and relevant aarch64 gcc and libraries' binaries can be downloaded using
-the `./scripts/download_aarch64_packages.py` script. OSv can also be built natively on Ubuntu on ARM hardware
-like Raspberry PI 4, Odroid N2+ or RockPro64. 
-
-Please note that as of the latest [0.57.0 release](https://github.com/cloudius-systems/osv/releases/tag/v0.57.0), the ARM part of OSv has been greately improved and tested and is pretty much on par with the x86_64 port in terms of the functionality.
-In addition, all unit tests and many  advanced apps like Java, golang, nginx, python, iperf3, etc can successfully run
-on QEMU and Firecraker on Raspberry PI 4 and Odroid N2+ with KVM acceleration enabled.
-
-For more information about the aarch64 port please read [this Wiki page](https://github.com/cloudius-systems/osv/wiki/AArch64).
-
-### Filesystems
-
-At the end of the boot process, OSv dynamic linker loads an application ELF and any related libraries
- from the filesystem on a disk that is part of the image. By default, the images built by `./scripts/build`
- contain a disk formatted as ZFS, which you can read more about [here](https://github.com/cloudius-systems/osv/wiki/ZFS).
- ZFS is a great read-write file system and may be a perfect fit if you want to run MySQL on OSv. However, it may be an overkill
- if you want to run stateless apps in which case you may consider 
- [Read-Only FS](https://github.com/cloudius-systems/osv/commit/cd449667b7f86721095ddf4f9f3f8b87c1c414c9). Finally,
- you can also have OSv read the application binary from RAMFS, in which case the filesystem get embedded as part of
- the kernel ELF. You can specify which filesystem to build image disk as
-  by setting parameter `fs` of `./scripts/build` to one of the three values -`zfs`, `rofs` or `ramfs`.
-
-In addition, one can mount NFS filesystem, which had been recently transformed to be a shared library pluggable as a [module](https://github.com/cloudius-systems/osv/tree/master/modules/nfs), and newly implemented and improved [Virtio-FS filesystem](https://stefanha.github.io/virtio/virtio-fs.html#x1-41500011). The Virtio-FS mounts can be setup by adding proper entry `/etc/fstab` or by passing a boot parameter as explained in this [Wiki](https://github.com/cloudius-systems/osv/wiki/virtio-fs). In addition, very recently OSv has been enhanced to be able to boot from Virtio-FS filesystem directly.
-
-Finally, the ZFS support has been also greatly improved as of the 0.57 release and there are many methods and setups to build and run ZFS images with OSv. For details please read the ZFS section of the [Filesystems wiki](https://github.com/cloudius-systems/osv/wiki/Filesystems#zfs).
-
-## Running OSv
-
-Running an OSv image, built by `scripts/build`, is as easy as:
-```bash
-./scripts/run.py
-```
-
-By default, the `run.py` runs OSv under KVM, with 4 vCPUs and 2 GB of memory. 
-You can control these and tens of other ones by passing relevant parameters to 
-the `run.py`. For details, on how to use the script, please run `./scripts/run.py --help`.
-
-The `run.py` can run OSv image on QEMU/KVM, Xen and VMware. If running under KVM you can terminate by hitting Ctrl+A X.
-
-Alternatively, you can use `./scripts/firecracker.py` to run OSv on [Firecracker](https://firecracker-microvm.github.io/). 
-This script automatically downloads firecracker binary if missing, and accepts number of parameters like number ot vCPUs, memory
-named exactly like `run.py` does. You can learn more about running OSv on Firecracker 
-from this [wiki](https://github.com/cloudius-systems/osv/wiki/Running-OSv-on-Firecracker). 
-
-Please note that in order to run OSv with the best performance on Linux under QEMU or Firecracker you need KVM enabled 
-(this is only possible on *physical* Linux machines, EC2 "bare metal" (i3) instances or VMs that support nested virtualization with KVM on). 
-The easiest way to verify if KVM is enabled is to check if `/dev/kvm` is present, and your user account can read from and write to it. 
-Adding your user to the kvm group may be necessary like so:
-```bash
-usermod -aG kvm <user name>
-```
-
-For more information about building and running JVM, Node.JS, Python and other managed runtimes as well as Rust, Golang or C/C++ apps
- on OSv, please read this [wiki page](https://github.com/cloudius-systems/osv/wiki#running-your-application-on-osv). 
- For more information about various example apps you can build and run on OSv, please read 
- [the osv-apps repo README](https://github.com/cloudius-systems/osv-apps#osv-applications).
-
-### Networking
-
-By default, the `run.py`  starts OSv with
- [user networking/SLIRP](https://wiki.qemu.org/Documentation/Networking#User_Networking_.28SLIRP.29) on. 
-To start OSv with more performant external networking, you need to enable `-n` and `-v` options like so:
-
-```
-sudo ./scripts/run.py -nv
-```
-
-The -v is for KVM's vhost that provides better performance
-and its setup requires tap device and thus we use sudo.
-
-Alternatively, one can run OSv as a non-privileged used with a tap device like so:
-```
-./scripts/create_tap_device.sh natted qemu_tap0 172.18.0.1 #You can pick a different address but then update all IPs below
+./scripts/build clean" tabindex="0" role="button">
+      <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-copy js-clipboard-copy-icon">
+    <path d="M0 6.75C0 5.784.784 5 1.75 5h1.5a.75.75 0 0 1 0 1.5h-1.5a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-1.5a.75.75 0 0 1 1.5 0v1.5A1.75 1.75 0 0 1 9.25 16h-7.5A1.75 1.75 0 0 1 0 14.25Z"></path><path d="M5 1.75C5 .784 5.784 0 6.75 0h7.5C15.216 0 16 .784 16 1.75v7.5A1.75 1.75 0 0 1 14.25 11h-7.5A1.75 1.75 0 0 1 5 9.25Zm1.75-.25a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-7.5a.25.25 0 0 0-.25-.25Z"></path>
+</svg>
+      <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-check js-clipboard-check-icon color-fg-success d-none">
+    <path d="M13.78 4.22a.75.75 0 0 1 0 1.06l-7.25 7.25a.75.75 0 0 1-1.06 0L2.22 9.28a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018L6 10.94l6.72-6.72a.75.75 0 0 1 1.06 0Z"></path>
+</svg>
+    </clipboard-copy>
+  </div></div>
+<p dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">命令 nproc 将自动计算 make 的作业/线程数</font></font><code>./scripts/build</code><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">。</font><font style="vertical-align: inherit;">或者，可以按如下方式导出环境变量 MAKEFLAGS：</font></font></p>
+<div class="snippet-clipboard-content notranslate position-relative overflow-auto"><pre class="notranslate"><code>export MAKEFLAGS=-j$(nproc)
+</code></pre><div class="zeroclipboard-container">
+    <clipboard-copy aria-label="Copy" class="ClipboardButton btn btn-invisible js-clipboard-copy m-2 p-0 tooltipped-no-delay d-flex flex-justify-center flex-items-center" data-copy-feedback="Copied!" data-tooltip-direction="w" value="export MAKEFLAGS=-j$(nproc)" tabindex="0" role="button">
+      <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-copy js-clipboard-copy-icon">
+    <path d="M0 6.75C0 5.784.784 5 1.75 5h1.5a.75.75 0 0 1 0 1.5h-1.5a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-1.5a.75.75 0 0 1 1.5 0v1.5A1.75 1.75 0 0 1 9.25 16h-7.5A1.75 1.75 0 0 1 0 14.25Z"></path><path d="M5 1.75C5 .784 5.784 0 6.75 0h7.5C15.216 0 16 .784 16 1.75v7.5A1.75 1.75 0 0 1 14.25 11h-7.5A1.75 1.75 0 0 1 5 9.25Zm1.75-.25a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-7.5a.25.25 0 0 0-.25-.25Z"></path>
+</svg>
+      <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-check js-clipboard-check-icon color-fg-success d-none">
+    <path d="M13.78 4.22a.75.75 0 0 1 0 1.06l-7.25 7.25a.75.75 0 0 1-1.06 0L2.22 9.28a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018L6 10.94l6.72-6.72a.75.75 0 0 1 1.06 0Z"></path>
+</svg>
+    </clipboard-copy>
+  </div></div>
+<p dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">在这种情况下，make 和scripts/build 不需要参数-j。</font></font></p>
+<p dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">有关如何使用构建脚本的详细信息，请运行</font></font><code>./scripts/build --help</code><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">.</font></font></p>
+<p dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">创建</font><font style="vertical-align: inherit;">qcow2 格式的</font></font><code>./scripts/build</code><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">图像。</font></font><code>build/last/usr.img</code><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">要将此映像转换为其他格式，请使用该</font></font><code>./scripts/convert</code><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">
+工具，该工具可以将映像转换为 vmdk、vdi 或 raw 格式。</font><font style="vertical-align: inherit;">例如：</font></font></p>
+<div class="snippet-clipboard-content notranslate position-relative overflow-auto"><pre class="notranslate"><code>./scripts/convert raw
+</code></pre><div class="zeroclipboard-container">
+    <clipboard-copy aria-label="Copy" class="ClipboardButton btn btn-invisible js-clipboard-copy m-2 p-0 tooltipped-no-delay d-flex flex-justify-center flex-items-center" data-copy-feedback="Copied!" data-tooltip-direction="w" value="./scripts/convert raw" tabindex="0" role="button">
+      <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-copy js-clipboard-copy-icon">
+    <path d="M0 6.75C0 5.784.784 5 1.75 5h1.5a.75.75 0 0 1 0 1.5h-1.5a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-1.5a.75.75 0 0 1 1.5 0v1.5A1.75 1.75 0 0 1 9.25 16h-7.5A1.75 1.75 0 0 1 0 14.25Z"></path><path d="M5 1.75C5 .784 5.784 0 6.75 0h7.5C15.216 0 16 .784 16 1.75v7.5A1.75 1.75 0 0 1 14.25 11h-7.5A1.75 1.75 0 0 1 5 9.25Zm1.75-.25a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-7.5a.25.25 0 0 0-.25-.25Z"></path>
+</svg>
+      <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-check js-clipboard-check-icon color-fg-success d-none">
+    <path d="M13.78 4.22a.75.75 0 0 1 0 1.06l-7.25 7.25a.75.75 0 0 1-1.06 0L2.22 9.28a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018L6 10.94l6.72-6.72a.75.75 0 0 1 1.06 0Z"></path>
+</svg>
+    </clipboard-copy>
+  </div></div>
+<div class="markdown-heading" dir="auto"><h3 tabindex="-1" class="heading-element" dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">拱64</font></font></h3><a id="user-content-aarch64" class="anchor" aria-label="永久链接：Aarch64" href="#aarch64"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path d="m7.775 3.275 1.25-1.25a3.5 3.5 0 1 1 4.95 4.95l-2.5 2.5a3.5 3.5 0 0 1-4.95 0 .751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018 1.998 1.998 0 0 0 2.83 0l2.5-2.5a2.002 2.002 0 0 0-2.83-2.83l-1.25 1.25a.751.751 0 0 1-1.042-.018.751.751 0 0 1-.018-1.042Zm-4.69 9.64a1.998 1.998 0 0 0 2.83 0l1.25-1.25a.751.751 0 0 1 1.042.018.751.751 0 0 1 .018 1.042l-1.25 1.25a3.5 3.5 0 1 1-4.95-4.95l2.5-2.5a3.5 3.5 0 0 1 4.95 0 .751.751 0 0 1-.018 1.042.751.751 0 0 1-1.042.018 1.998 1.998 0 0 0-2.83 0l-2.5 2.5a1.998 1.998 0 0 0 0 2.83Z"></path></svg></a></div>
+<p dir="auto"><font style="vertical-align: inherit;"></font><strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">默认情况下，OSv 内核是针对本机主机架构（x86_64 或 aarch64）构建的，但也可以通过添加arch</font></font></strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">参数在 Intel 机器上为 ARM 交叉编译内核和模块，</font><font style="vertical-align: inherit;">如下所示：</font></font></p>
+<div class="highlight highlight-source-shell notranslate position-relative overflow-auto" dir="auto"><pre>./scripts/build arch=aarch64</pre><div class="zeroclipboard-container">
+    <clipboard-copy aria-label="Copy" class="ClipboardButton btn btn-invisible js-clipboard-copy m-2 p-0 tooltipped-no-delay d-flex flex-justify-center flex-items-center" data-copy-feedback="Copied!" data-tooltip-direction="w" value="./scripts/build arch=aarch64" tabindex="0" role="button">
+      <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-copy js-clipboard-copy-icon">
+    <path d="M0 6.75C0 5.784.784 5 1.75 5h1.5a.75.75 0 0 1 0 1.5h-1.5a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-1.5a.75.75 0 0 1 1.5 0v1.5A1.75 1.75 0 0 1 9.25 16h-7.5A1.75 1.75 0 0 1 0 14.25Z"></path><path d="M5 1.75C5 .784 5.784 0 6.75 0h7.5C15.216 0 16 .784 16 1.75v7.5A1.75 1.75 0 0 1 14.25 11h-7.5A1.75 1.75 0 0 1 5 9.25Zm1.75-.25a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-7.5a.25.25 0 0 0-.25-.25Z"></path>
+</svg>
+      <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-check js-clipboard-check-icon color-fg-success d-none">
+    <path d="M13.78 4.22a.75.75 0 0 1 0 1.06l-7.25 7.25a.75.75 0 0 1-1.06 0L2.22 9.28a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018L6 10.94l6.72-6.72a.75.75 0 0 1 1.06 0Z"></path>
+</svg>
+    </clipboard-copy>
+  </div></div>
+<p dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">目前，</font><font style="vertical-align: inherit;">仅在 Fedora、Ubuntu 和 CentOS 7 上支持交叉编译</font></font><strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">aarch64</font></font></strong><font style="vertical-align: inherit;"></font><code>./scripts/download_aarch64_packages.py</code><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">版本的 OSv，并且可以使用该脚本下载相关的 aarch64 gcc 和库的二进制文件。</font><font style="vertical-align: inherit;">OSv 还可以在 ARM 硬件（如 Raspberry PI 4、Odroid N2+ 或 RockPro64）上的 Ubuntu 上本地构建。</font></font></p>
+<p dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">请注意，截至最新的</font></font><a href="https://github.com/cloudius-systems/osv/releases/tag/v0.57.0"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">0.57.0 版本</font></font></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">，OSv 的 ARM 部分已经得到了极大的改进和测试，在功能方面与 x86_64 端口相当。</font><font style="vertical-align: inherit;">此外，所有单元测试和许多高级应用程序（如 Java、golang、nginx、python、iperf3 等）都可以在启用了 KVM 加速的 Raspberry PI 4 和 Odroid N2+ 上的 QEMU 和 Firecraker 上成功运行。</font></font></p>
+<p dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">有关 aarch64 端口的更多信息，请阅读</font></font><a href="https://github.com/cloudius-systems/osv/wiki/AArch64"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">此 Wiki 页面</font></font></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">。</font></font></p>
+<div class="markdown-heading" dir="auto"><h3 tabindex="-1" class="heading-element" dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">文件系统</font></font></h3><a id="user-content-filesystems" class="anchor" aria-label="永久链接：文件系统" href="#filesystems"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path d="m7.775 3.275 1.25-1.25a3.5 3.5 0 1 1 4.95 4.95l-2.5 2.5a3.5 3.5 0 0 1-4.95 0 .751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018 1.998 1.998 0 0 0 2.83 0l2.5-2.5a2.002 2.002 0 0 0-2.83-2.83l-1.25 1.25a.751.751 0 0 1-1.042-.018.751.751 0 0 1-.018-1.042Zm-4.69 9.64a1.998 1.998 0 0 0 2.83 0l1.25-1.25a.751.751 0 0 1 1.042.018.751.751 0 0 1 .018 1.042l-1.25 1.25a3.5 3.5 0 1 1-4.95-4.95l2.5-2.5a3.5 3.5 0 0 1 4.95 0 .751.751 0 0 1-.018 1.042.751.751 0 0 1-1.042.018 1.998 1.998 0 0 0-2.83 0l-2.5 2.5a1.998 1.998 0 0 0 0 2.83Z"></path></svg></a></div>
+<p dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">在引导过程结束时，OSv 动态链接器从作为映像一部分的磁盘上的文件系统加载应用程序 ELF 和任何相关库。</font><font style="vertical-align: inherit;">默认情况下，构建的映像包含</font></font><code>./scripts/build</code><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">
+格式化为 ZFS 的磁盘，您可以</font></font><a href="https://github.com/cloudius-systems/osv/wiki/ZFS"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">在此处</font></font></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">阅读有关该磁盘的更多信息。</font><font style="vertical-align: inherit;">ZFS 是一个出色的读写文件系统，如果您想在 OSv 上运行 MySQL，它可能是一个完美的选择。</font><font style="vertical-align: inherit;">但是，如果您想运行无状态应用程序，这可能有点过大了，在这种情况下您可以考虑
+</font></font><a href="https://github.com/cloudius-systems/osv/commit/cd449667b7f86721095ddf4f9f3f8b87c1c414c9"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">Read-Only FS</font></font></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">。</font><font style="vertical-align: inherit;">最后，您还可以让 OSv 从 RAMFS 读取应用程序二进制文件，在这种情况下，文件系统将作为内核 ELF 的一部分嵌入。</font><font style="vertical-align: inherit;">您可以通过将 参数设置为三个值之一来指定构建映像磁盘的文件</font></font><code>fs</code><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">系统</font></font><code>./scripts/build</code><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">- </font></font><code>zfs</code><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">、</font></font><code>rofs</code><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">或</font></font><code>ramfs</code><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">。</font></font></p>
+<p dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">此外，还可以挂载 NFS 文件系统，该文件系统最近已转变为可作为</font></font><a href="https://github.com/cloudius-systems/osv/tree/master/modules/nfs"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">模块</font></font></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">插入的共享库，以及新实现和改进的</font></font><a href="https://stefanha.github.io/virtio/virtio-fs.html#x1-41500011" rel="nofollow"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">Virtio-FS 文件系统</font></font></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">。</font></font><code>/etc/fstab</code><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">可以通过添加适当的条目或传递引导参数来</font><font style="vertical-align: inherit;">设置 Virtio-FS 挂载，如本</font></font><a href="https://github.com/cloudius-systems/osv/wiki/virtio-fs"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">Wiki</font></font></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">中所述。</font><font style="vertical-align: inherit;">此外，最近 OSv 已得到增强，能够直接从 Virtio-FS 文件系统启动。</font></font></p>
+<p dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">最后，自 0.57 版本起，ZFS 支持也得到了极大改进，并且有许多方法和设置可以使用 OSv 构建和运行 ZFS 映像。</font></font><a href="https://github.com/cloudius-systems/osv/wiki/Filesystems#zfs"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">有关详细信息，请阅读Filesystems wiki</font></font></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">的 ZFS 部分</font><font style="vertical-align: inherit;">。</font></font></p>
+<div class="markdown-heading" dir="auto"><h2 tabindex="-1" class="heading-element" dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">跑步等</font></font></h2><a id="user-content-running-osv" class="anchor" aria-label="永久链接：跑步等" href="#running-osv"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path d="m7.775 3.275 1.25-1.25a3.5 3.5 0 1 1 4.95 4.95l-2.5 2.5a3.5 3.5 0 0 1-4.95 0 .751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018 1.998 1.998 0 0 0 2.83 0l2.5-2.5a2.002 2.002 0 0 0-2.83-2.83l-1.25 1.25a.751.751 0 0 1-1.042-.018.751.751 0 0 1-.018-1.042Zm-4.69 9.64a1.998 1.998 0 0 0 2.83 0l1.25-1.25a.751.751 0 0 1 1.042.018.751.751 0 0 1 .018 1.042l-1.25 1.25a3.5 3.5 0 1 1-4.95-4.95l2.5-2.5a3.5 3.5 0 0 1 4.95 0 .751.751 0 0 1-.018 1.042.751.751 0 0 1-1.042.018 1.998 1.998 0 0 0-2.83 0l-2.5 2.5a1.998 1.998 0 0 0 0 2.83Z"></path></svg></a></div>
+<p dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">运行由 构建的 OSv 映像</font></font><code>scripts/build</code><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">非常简单：</font></font></p>
+<div class="highlight highlight-source-shell notranslate position-relative overflow-auto" dir="auto"><pre>./scripts/run.py</pre><div class="zeroclipboard-container">
+    <clipboard-copy aria-label="Copy" class="ClipboardButton btn btn-invisible js-clipboard-copy m-2 p-0 tooltipped-no-delay d-flex flex-justify-center flex-items-center" data-copy-feedback="Copied!" data-tooltip-direction="w" value="./scripts/run.py" tabindex="0" role="button">
+      <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-copy js-clipboard-copy-icon">
+    <path d="M0 6.75C0 5.784.784 5 1.75 5h1.5a.75.75 0 0 1 0 1.5h-1.5a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-1.5a.75.75 0 0 1 1.5 0v1.5A1.75 1.75 0 0 1 9.25 16h-7.5A1.75 1.75 0 0 1 0 14.25Z"></path><path d="M5 1.75C5 .784 5.784 0 6.75 0h7.5C15.216 0 16 .784 16 1.75v7.5A1.75 1.75 0 0 1 14.25 11h-7.5A1.75 1.75 0 0 1 5 9.25Zm1.75-.25a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-7.5a.25.25 0 0 0-.25-.25Z"></path>
+</svg>
+      <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-check js-clipboard-check-icon color-fg-success d-none">
+    <path d="M13.78 4.22a.75.75 0 0 1 0 1.06l-7.25 7.25a.75.75 0 0 1-1.06 0L2.22 9.28a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018L6 10.94l6.72-6.72a.75.75 0 0 1 1.06 0Z"></path>
+</svg>
+    </clipboard-copy>
+  </div></div>
+<p dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">默认情况下，</font></font><code>run.py</code><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">在 KVM 下运行 OSv，具有 4 个 vCPU 和 2 GB 内存。</font><font style="vertical-align: inherit;">您可以通过将相关参数传递给</font></font><code>run.py</code><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">. </font><font style="vertical-align: inherit;">有关如何使用该脚本的详细信息，请运行</font></font><code>./scripts/run.py --help</code><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">。</font></font></p>
+<p dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">可以</font></font><code>run.py</code><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">在 QEMU/KVM、Xen 和 VMware 上运行 OSv 映像。</font><font style="vertical-align: inherit;">如果在 KVM 下运行，您可以通过按 Ctrl+A X 终止。</font></font></p>
+<p dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">或者，您可以使用在</font><a href="https://firecracker-microvm.github.io/" rel="nofollow"><font style="vertical-align: inherit;">Firecracker</font></a></font><code>./scripts/firecracker.py</code><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">上运行 OSv </font><font style="vertical-align: inherit;">。</font><font style="vertical-align: inherit;">如果缺少的话，该脚本会自动下载 firecracker 二进制文件，并接受参数数量，例如 vCPU 数量、内存命名等</font><font style="vertical-align: inherit;">。</font><font style="vertical-align: inherit;">您可以从此</font><a href="https://github.com/cloudius-systems/osv/wiki/Running-OSv-on-Firecracker"><font style="vertical-align: inherit;">wiki</font></a><font style="vertical-align: inherit;">了解有关在 Firecracker 上运行 OSv 的更多信息。</font></font><a href="https://firecracker-microvm.github.io/" rel="nofollow"><font style="vertical-align: inherit;"></font></a><font style="vertical-align: inherit;"></font><code>run.py</code><font style="vertical-align: inherit;"></font><a href="https://github.com/cloudius-systems/osv/wiki/Running-OSv-on-Firecracker"><font style="vertical-align: inherit;"></font></a><font style="vertical-align: inherit;"></font></p>
+<p dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">请注意，为了在 QEMU 或 Firecracker 下的 Linux 上以最佳性能运行 OSv，您需要启用 KVM（这只能在</font></font><em><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">物理</font></font></em><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">Linux 机器、EC2“裸机”(i3) 实例或支持 KVM 嵌套虚拟化的 VM 上实现） ）。</font><font style="vertical-align: inherit;">验证 KVM 是否已启用的最简单方法是检查是否</font></font><code>/dev/kvm</code><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">存在，以及您的用户帐户是否可以对其进行读取和写入。</font><font style="vertical-align: inherit;">可能需要将您的用户添加到 kvm 组，如下所示：</font></font></p>
+<div class="highlight highlight-source-shell notranslate position-relative overflow-auto" dir="auto"><pre>usermod -aG kvm <span class="pl-k">&lt;</span>user name<span class="pl-k">&gt;</span></pre><div class="zeroclipboard-container">
+    <clipboard-copy aria-label="Copy" class="ClipboardButton btn btn-invisible js-clipboard-copy m-2 p-0 tooltipped-no-delay d-flex flex-justify-center flex-items-center" data-copy-feedback="Copied!" data-tooltip-direction="w" value="usermod -aG kvm <user name>" tabindex="0" role="button">
+      <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-copy js-clipboard-copy-icon">
+    <path d="M0 6.75C0 5.784.784 5 1.75 5h1.5a.75.75 0 0 1 0 1.5h-1.5a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-1.5a.75.75 0 0 1 1.5 0v1.5A1.75 1.75 0 0 1 9.25 16h-7.5A1.75 1.75 0 0 1 0 14.25Z"></path><path d="M5 1.75C5 .784 5.784 0 6.75 0h7.5C15.216 0 16 .784 16 1.75v7.5A1.75 1.75 0 0 1 14.25 11h-7.5A1.75 1.75 0 0 1 5 9.25Zm1.75-.25a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-7.5a.25.25 0 0 0-.25-.25Z"></path>
+</svg>
+      <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-check js-clipboard-check-icon color-fg-success d-none">
+    <path d="M13.78 4.22a.75.75 0 0 1 0 1.06l-7.25 7.25a.75.75 0 0 1-1.06 0L2.22 9.28a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018L6 10.94l6.72-6.72a.75.75 0 0 1 1.06 0Z"></path>
+</svg>
+    </clipboard-copy>
+  </div></div>
+<p dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">有关在 OSv 上构建和运行 JVM、Node.JS、Python 和其他托管运行时以及 Rust、Golang 或 C/C++ 应用程序的更多信息，请阅读此</font></font><a href="https://github.com/cloudius-systems/osv/wiki#running-your-application-on-osv"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">wiki 页面</font></font></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">。</font><font style="vertical-align: inherit;">有关可以在 OSv 上构建和运行的各种示例应用程序的更多信息，请阅读
+</font></font><a href="https://github.com/cloudius-systems/osv-apps#osv-applications"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">osv-apps 存储库 README</font></font></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">。</font></font></p>
+<div class="markdown-heading" dir="auto"><h3 tabindex="-1" class="heading-element" dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">联网</font></font></h3><a id="user-content-networking" class="anchor" aria-label="永久链接：网络" href="#networking"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path d="m7.775 3.275 1.25-1.25a3.5 3.5 0 1 1 4.95 4.95l-2.5 2.5a3.5 3.5 0 0 1-4.95 0 .751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018 1.998 1.998 0 0 0 2.83 0l2.5-2.5a2.002 2.002 0 0 0-2.83-2.83l-1.25 1.25a.751.751 0 0 1-1.042-.018.751.751 0 0 1-.018-1.042Zm-4.69 9.64a1.998 1.998 0 0 0 2.83 0l1.25-1.25a.751.751 0 0 1 1.042.018.751.751 0 0 1 .018 1.042l-1.25 1.25a3.5 3.5 0 1 1-4.95-4.95l2.5-2.5a3.5 3.5 0 0 1 4.95 0 .751.751 0 0 1-.018 1.042.751.751 0 0 1-1.042.018 1.998 1.998 0 0 0-2.83 0l-2.5 2.5a1.998 1.998 0 0 0 0 2.83Z"></path></svg></a></div>
+<p dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">默认情况下，</font></font><code>run.py</code><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">  启动 OSv 时
+</font></font><a href="https://wiki.qemu.org/Documentation/Networking#User_Networking_.28SLIRP.29" rel="nofollow"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">用户网络/SLIRP</font></font></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">处于打开状态。</font><font style="vertical-align: inherit;">要以更高性能的外部网络启动 OSv，您需要启用</font></font><code>-n</code><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">如下</font></font><code>-v</code><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">选项：</font></font></p>
+<div class="snippet-clipboard-content notranslate position-relative overflow-auto"><pre class="notranslate"><code>sudo ./scripts/run.py -nv
+</code></pre><div class="zeroclipboard-container">
+    <clipboard-copy aria-label="Copy" class="ClipboardButton btn btn-invisible js-clipboard-copy m-2 p-0 tooltipped-no-delay d-flex flex-justify-center flex-items-center" data-copy-feedback="Copied!" data-tooltip-direction="w" value="sudo ./scripts/run.py -nv" tabindex="0" role="button">
+      <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-copy js-clipboard-copy-icon">
+    <path d="M0 6.75C0 5.784.784 5 1.75 5h1.5a.75.75 0 0 1 0 1.5h-1.5a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-1.5a.75.75 0 0 1 1.5 0v1.5A1.75 1.75 0 0 1 9.25 16h-7.5A1.75 1.75 0 0 1 0 14.25Z"></path><path d="M5 1.75C5 .784 5.784 0 6.75 0h7.5C15.216 0 16 .784 16 1.75v7.5A1.75 1.75 0 0 1 14.25 11h-7.5A1.75 1.75 0 0 1 5 9.25Zm1.75-.25a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-7.5a.25.25 0 0 0-.25-.25Z"></path>
+</svg>
+      <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-check js-clipboard-check-icon color-fg-success d-none">
+    <path d="M13.78 4.22a.75.75 0 0 1 0 1.06l-7.25 7.25a.75.75 0 0 1-1.06 0L2.22 9.28a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018L6 10.94l6.72-6.72a.75.75 0 0 1 1.06 0Z"></path>
+</svg>
+    </clipboard-copy>
+  </div></div>
+<p dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">-v 用于 KVM 的虚拟主机，可提供更好的性能，其设置需要 Tap 设备，因此我们使用 sudo。</font></font></p>
+<p dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">或者，可以将 OSv 作为与 Tap 设备一起使用的非特权运行，如下所示：</font></font></p>
+<div class="snippet-clipboard-content notranslate position-relative overflow-auto"><pre class="notranslate"><code>./scripts/create_tap_device.sh natted qemu_tap0 172.18.0.1 #You can pick a different address but then update all IPs below
 
 ./scripts/run.py -n -t qemu_tap0 \
   --execute='--ip=eth0,172.18.0.2,255.255.255.252 --defaultgw=172.18.0.1 --nameserver=172.18.0.1 /hello'
-```
+</code></pre><div class="zeroclipboard-container">
+    <clipboard-copy aria-label="Copy" class="ClipboardButton btn btn-invisible js-clipboard-copy m-2 p-0 tooltipped-no-delay d-flex flex-justify-center flex-items-center" data-copy-feedback="Copied!" data-tooltip-direction="w" value="./scripts/create_tap_device.sh natted qemu_tap0 172.18.0.1 #You can pick a different address but then update all IPs below
 
-By default, OSv spawns a `dhcpd`-like thread that automatically configures virtual NICs.
-A static configuration can be done within OSv by configuring networking like so:
-
-```
-ifconfig virtio-net0 192.168.122.100 netmask 255.255.255.0 up
+./scripts/run.py -n -t qemu_tap0 \
+  --execute='--ip=eth0,172.18.0.2,255.255.255.252 --defaultgw=172.18.0.1 --nameserver=172.18.0.1 /hello'" tabindex="0" role="button">
+      <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-copy js-clipboard-copy-icon">
+    <path d="M0 6.75C0 5.784.784 5 1.75 5h1.5a.75.75 0 0 1 0 1.5h-1.5a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-1.5a.75.75 0 0 1 1.5 0v1.5A1.75 1.75 0 0 1 9.25 16h-7.5A1.75 1.75 0 0 1 0 14.25Z"></path><path d="M5 1.75C5 .784 5.784 0 6.75 0h7.5C15.216 0 16 .784 16 1.75v7.5A1.75 1.75 0 0 1 14.25 11h-7.5A1.75 1.75 0 0 1 5 9.25Zm1.75-.25a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-7.5a.25.25 0 0 0-.25-.25Z"></path>
+</svg>
+      <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-check js-clipboard-check-icon color-fg-success d-none">
+    <path d="M13.78 4.22a.75.75 0 0 1 0 1.06l-7.25 7.25a.75.75 0 0 1-1.06 0L2.22 9.28a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018L6 10.94l6.72-6.72a.75.75 0 0 1 1.06 0Z"></path>
+</svg>
+    </clipboard-copy>
+  </div></div>
+<p dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">默认情况下，OSv 会生成一个</font></font><code>dhcpd</code><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">类似线程，自动配置虚拟网卡。</font><font style="vertical-align: inherit;">静态配置可以在 OSv 中通过配置网络来完成，如下所示：</font></font></p>
+<div class="snippet-clipboard-content notranslate position-relative overflow-auto"><pre class="notranslate"><code>ifconfig virtio-net0 192.168.122.100 netmask 255.255.255.0 up
 route add default gw 192.168.122.1
-```
-
-To enable networking on Firecracker, you have to explicitly enable `-n` option
-to `firecracker.py`.
-
-Finally, please note that the master branch of OSv only implements IPV4 subset of networking stack.
-If you need IPV6, please build from [ipv6 branch](https://github.com/cloudius-systems/osv/tree/ipv6)
- or use IPV6 kernel published to [nightly releases repo](https://github.com/osvunikernel/osv-nightly-releases/releases/tag/ci-ipv6-latest). 
-
-## Debugging, Monitoring, Profiling OSv
-
-- OSv can be debugged with gdb; for more details please read this
- [wiki](https://github.com/cloudius-systems/osv/wiki/Debugging-OSv)
-- OSv kernel and application can be traced and profiled; for more details please read 
-this [wiki](https://github.com/cloudius-systems/osv/wiki/Trace-analysis-using-trace.py)
-- OSv comes with the admin/monitoring REST API server; for more details please read 
-[this](https://github.com/cloudius-systems/osv/wiki/Command-Line-Interface-(CLI)) and
- [that wiki page](https://github.com/cloudius-systems/osv/wiki/Using-OSv-REST-API). There is also
- lighter [monitoring REST API module](https://github.com/cloudius-systems/osv/commit/aa32614221254ce300f401bb99c506b528b85682) 
- that is effectively a read-only subset of the former one. 
- 
-## FAQ and Contact
-
-If you want to learn more about OSv or ask questions, 
-please contact us on [OSv Google Group forum](https://groups.google.com/forum/#!forum/osv-dev).
-You can also follow us on [Twitter](https://twitter.com/osv_unikernel).
-
-## Papers and Articles about OSv
-
-List of somewhat newer articles about OSv found on the Web:
-* [P99 Presentation: OSv Unikernel — Optimizing Guest OS to Run Stateless and Serverless Apps in the Cloud](https://www.p99conf.io/session/osv-unikernel-optimizing-guest-os-to-run-stateless-and-serverless-apps-in-the-cloud/)
-* [Unikernels vs Containers: An In-Depth Benchmarking Study in the context of Microservice Applications](https://biblio.ugent.be/publication/8582433/file/8582438)
-* [Towards a Practical Ecosystem of Specialized OS Kernels](http://cs.iit.edu/~khale/docs/diver-ross19.pdf)
-* [A Performance Evaluation of Unikernels](https://pdfs.semanticscholar.org/d956/f72dbc65301578dc95e0f751f4ae7c09d831.pdf)
-* [Security Perspective on Unikernels](https://arxiv.org/pdf/1911.06260.pdf)
-* [Performance Evaluation of OSv for Server Applications](http://www.cs.utah.edu/~peterm/prelim-osv-performance.pdf)
-* [Time provisioning Evaluation of KVM, Docker and Unikernels in a Cloud Platform](https://tiagoferreto.github.io/pubs/2016ccgrid_xavier.pdf)
-* [Unikernels - Beyond Containers to the Next Generation of the Cloud](https://theswissbay.ch/pdf/_to_sort/O'Reilly/unikernels.pdf)
-
-You can find some older articles and presentations at http://osv.io/resources and http://blog.osv.io/.
+</code></pre><div class="zeroclipboard-container">
+    <clipboard-copy aria-label="Copy" class="ClipboardButton btn btn-invisible js-clipboard-copy m-2 p-0 tooltipped-no-delay d-flex flex-justify-center flex-items-center" data-copy-feedback="Copied!" data-tooltip-direction="w" value="ifconfig virtio-net0 192.168.122.100 netmask 255.255.255.0 up
+route add default gw 192.168.122.1" tabindex="0" role="button">
+      <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-copy js-clipboard-copy-icon">
+    <path d="M0 6.75C0 5.784.784 5 1.75 5h1.5a.75.75 0 0 1 0 1.5h-1.5a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-1.5a.75.75 0 0 1 1.5 0v1.5A1.75 1.75 0 0 1 9.25 16h-7.5A1.75 1.75 0 0 1 0 14.25Z"></path><path d="M5 1.75C5 .784 5.784 0 6.75 0h7.5C15.216 0 16 .784 16 1.75v7.5A1.75 1.75 0 0 1 14.25 11h-7.5A1.75 1.75 0 0 1 5 9.25Zm1.75-.25a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-7.5a.25.25 0 0 0-.25-.25Z"></path>
+</svg>
+      <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-check js-clipboard-check-icon color-fg-success d-none">
+    <path d="M13.78 4.22a.75.75 0 0 1 0 1.06l-7.25 7.25a.75.75 0 0 1-1.06 0L2.22 9.28a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018L6 10.94l6.72-6.72a.75.75 0 0 1 1.06 0Z"></path>
+</svg>
+    </clipboard-copy>
+  </div></div>
+<p dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">要在 Firecracker 上启用网络，您必须显式启用</font></font><code>-n</code><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">选项</font></font><code>firecracker.py</code><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">。</font></font></p>
+<p dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">最后，请注意，OSv 的主分支仅实现网络堆栈的 IPV4 子集。</font><font style="vertical-align: inherit;">如果您需要 IPV6，请从</font></font><a href="https://github.com/cloudius-systems/osv/tree/ipv6"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">ipv6 分支</font></font></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">构建
+或使用发布到</font></font><a href="https://github.com/osvunikernel/osv-nightly-releases/releases/tag/ci-ipv6-latest"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">nightlyreleases repo 的</font></font></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">IPV6 内核。</font></font></p>
+<div class="markdown-heading" dir="auto"><h2 tabindex="-1" class="heading-element" dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">调试、监控、分析 OSv</font></font></h2><a id="user-content-debugging-monitoring-profiling-osv" class="anchor" aria-label="永久链接：调试、监控、分析 OSv" href="#debugging-monitoring-profiling-osv"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path d="m7.775 3.275 1.25-1.25a3.5 3.5 0 1 1 4.95 4.95l-2.5 2.5a3.5 3.5 0 0 1-4.95 0 .751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018 1.998 1.998 0 0 0 2.83 0l2.5-2.5a2.002 2.002 0 0 0-2.83-2.83l-1.25 1.25a.751.751 0 0 1-1.042-.018.751.751 0 0 1-.018-1.042Zm-4.69 9.64a1.998 1.998 0 0 0 2.83 0l1.25-1.25a.751.751 0 0 1 1.042.018.751.751 0 0 1 .018 1.042l-1.25 1.25a3.5 3.5 0 1 1-4.95-4.95l2.5-2.5a3.5 3.5 0 0 1 4.95 0 .751.751 0 0 1-.018 1.042.751.751 0 0 1-1.042.018 1.998 1.998 0 0 0-2.83 0l-2.5 2.5a1.998 1.998 0 0 0 0 2.83Z"></path></svg></a></div>
+<ul dir="auto">
+<li><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">OSv可以用gdb进行调试；</font><font style="vertical-align: inherit;">有关更多详细信息，请阅读此
+</font></font><a href="https://github.com/cloudius-systems/osv/wiki/Debugging-OSv"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">维基</font></font></a></li>
+<li><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">OSv内核和应用程序可以被跟踪和分析；</font><font style="vertical-align: inherit;">有关更多详细信息，请阅读此</font></font><a href="https://github.com/cloudius-systems/osv/wiki/Trace-analysis-using-trace.py"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">维基</font></font></a></li>
+<li><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">OSv 附带管理/监控 REST API 服务器；</font><font style="vertical-align: inherit;">有关更多详细信息，请阅读
+</font></font><a href="https://github.com/cloudius-systems/osv/wiki/Command-Line-Interface-(CLI)"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">这个</font></font></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">和
+</font></font><a href="https://github.com/cloudius-systems/osv/wiki/Using-OSv-REST-API"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">那个 wiki 页面</font></font></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">。</font><font style="vertical-align: inherit;">还有一个更轻量级的</font></font><a href="https://github.com/cloudius-systems/osv/commit/aa32614221254ce300f401bb99c506b528b85682"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">监控 REST API 模块</font></font></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">
+，它实际上是前一个模块的只读子集。</font></font></li>
+</ul>
+<div class="markdown-heading" dir="auto"><h2 tabindex="-1" class="heading-element" dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">常见问题及联系方式</font></font></h2><a id="user-content-faq-and-contact" class="anchor" aria-label="永久链接：常见问题解答和联系方式" href="#faq-and-contact"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path d="m7.775 3.275 1.25-1.25a3.5 3.5 0 1 1 4.95 4.95l-2.5 2.5a3.5 3.5 0 0 1-4.95 0 .751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018 1.998 1.998 0 0 0 2.83 0l2.5-2.5a2.002 2.002 0 0 0-2.83-2.83l-1.25 1.25a.751.751 0 0 1-1.042-.018.751.751 0 0 1-.018-1.042Zm-4.69 9.64a1.998 1.998 0 0 0 2.83 0l1.25-1.25a.751.751 0 0 1 1.042.018.751.751 0 0 1 .018 1.042l-1.25 1.25a3.5 3.5 0 1 1-4.95-4.95l2.5-2.5a3.5 3.5 0 0 1 4.95 0 .751.751 0 0 1-.018 1.042.751.751 0 0 1-1.042.018 1.998 1.998 0 0 0-2.83 0l-2.5 2.5a1.998 1.998 0 0 0 0 2.83Z"></path></svg></a></div>
+<p dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">如果您想了解有关 OSv 的更多信息或提出问题，请通过</font></font><a href="https://groups.google.com/forum/#!forum/osv-dev" rel="nofollow"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">OSv Google Group 论坛</font></font></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">与我们联系。</font><font style="vertical-align: inherit;">您还可以在</font></font><a href="https://twitter.com/osv_unikernel" rel="nofollow"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">Twitter</font></font></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">上关注我们。</font></font></p>
+<div class="markdown-heading" dir="auto"><h2 tabindex="-1" class="heading-element" dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">关于 OSv 的论文和文章</font></font></h2><a id="user-content-papers-and-articles-about-osv" class="anchor" aria-label="永久链接：有关 OSv 的论文和文章" href="#papers-and-articles-about-osv"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path d="m7.775 3.275 1.25-1.25a3.5 3.5 0 1 1 4.95 4.95l-2.5 2.5a3.5 3.5 0 0 1-4.95 0 .751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018 1.998 1.998 0 0 0 2.83 0l2.5-2.5a2.002 2.002 0 0 0-2.83-2.83l-1.25 1.25a.751.751 0 0 1-1.042-.018.751.751 0 0 1-.018-1.042Zm-4.69 9.64a1.998 1.998 0 0 0 2.83 0l1.25-1.25a.751.751 0 0 1 1.042.018.751.751 0 0 1 .018 1.042l-1.25 1.25a3.5 3.5 0 1 1-4.95-4.95l2.5-2.5a3.5 3.5 0 0 1 4.95 0 .751.751 0 0 1-.018 1.042.751.751 0 0 1-1.042.018 1.998 1.998 0 0 0-2.83 0l-2.5 2.5a1.998 1.998 0 0 0 0 2.83Z"></path></svg></a></div>
+<p dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">在网上找到的有关 OSv 的较新文章列表：</font></font></p>
+<ul dir="auto">
+<li><a href="https://www.p99conf.io/session/osv-unikernel-optimizing-guest-os-to-run-stateless-and-serverless-apps-in-the-cloud/" rel="nofollow"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">P99 演示：OSv Unikernel — 优化来宾操作系统以在云中运行无状态和无服务器应用程序</font></font></a></li>
+<li><a href="https://biblio.ugent.be/publication/8582433/file/8582438" rel="nofollow"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">Unikernels 与容器：微服务应用程序背景下的深入基准测试研究</font></font></a></li>
+<li><a href="http://cs.iit.edu/~khale/docs/diver-ross19.pdf" rel="nofollow"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">迈向专业操作系统内核的实用生态系统</font></font></a></li>
+<li><a href="https://pdfs.semanticscholar.org/d956/f72dbc65301578dc95e0f751f4ae7c09d831.pdf" rel="nofollow"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">Unikernels 的性能评估</font></font></a></li>
+<li><a href="https://arxiv.org/pdf/1911.06260.pdf" rel="nofollow"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">Unikernels 的安全视角</font></font></a></li>
+<li><a href="http://www.cs.utah.edu/~peterm/prelim-osv-performance.pdf" rel="nofollow"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">服务器应用程序的 OSv 性能评估</font></font></a></li>
+<li><a href="https://tiagoferreto.github.io/pubs/2016ccgrid_xavier.pdf" rel="nofollow"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">云平台中 KVM、Docker 和 Unikernels 的时间配置评估</font></font></a></li>
+<li><a href="https://theswissbay.ch/pdf/_to_sort/O'Reilly/unikernels.pdf" rel="nofollow"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">Unikernels - 超越容器到下一代云</font></font></a></li>
+</ul>
+<p dir="auto"><font style="vertical-align: inherit;"></font><a href="http://osv.io/resources" rel="nofollow"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">您可以在http://osv.io/resources</font></font></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">和</font></font><a href="http://blog.osv.io/" rel="nofollow"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">http://blog.osv.io/</font></font></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">找到一些较旧的文章和演示文稿</font><font style="vertical-align: inherit;">。</font></font></p>
+</article></div>
